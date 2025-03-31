@@ -174,9 +174,9 @@ void OutsetAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce:
 
     const int numOperators = 6;
 
-	std::vector<double> level(numOperators);
-	std::vector<double> fine(numOperators);
-	std::vector<double> coarse(numOperators);
+	std::vector<float> level(numOperators);
+	std::vector<float> fine(numOperators);
+	std::vector<float> coarse(numOperators);
     std::vector<double> attack(numOperators);
 	std::vector<double> decay(numOperators);
 	std::vector<double> sustain(numOperators);
@@ -199,7 +199,12 @@ void OutsetAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce:
     
 	filter->setCutoffFrequency(cutoff);
 	filter->setResonance(q);
-    synth.updateADSR(attack1, decay1, sustain1, release1);
+	for (int i = 0; i < 6; i++) {
+        // tbd:
+		//synth.updateFine(fine[i], i);
+		synth.updateOsc(fine[i], coarse[i], level[i], i);
+		synth.updateADSR(attack[i], decay[i], sustain[i], release[i], i);
+	}
     keyboardState.processNextMidiBuffer(midiMessages, 0, buffer.getNumSamples(), true);
     splitBufferByEvents(buffer, midiMessages);
     filter->processBlock(buffer);

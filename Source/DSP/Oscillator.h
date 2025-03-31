@@ -9,13 +9,12 @@
 */
 
 #pragma once
-
+#include <cmath>
 
 const float TWO_PI = 6.2831853071795864f;
 class Oscillator {
 public:
     float amplitude; 
-    float inc;
     float phase;
 //    float freq;
 //    float sampleRate; 
@@ -34,9 +33,22 @@ public:
             phase -= 1.0f;
         }
         
-        return amplitude * std::sin(TWO_PI * phase);
+        return std::sin(TWO_PI * phase);
 //        float output = amplitude * std::sin(TWO_PI * sampleIndex * freq / sampleRate + phaseOffset);
 //        sampleIndex += 1;
 //        return output;
     }
+    float getFrequency()
+    {
+        return freq;
+    }
+    void setFrequency(float freq_, float sampleRate)
+    {
+        freq = freq_;
+        inc = freq / sampleRate;
+    }
+private:
+    float freq;
+    float inc;
+
 };
