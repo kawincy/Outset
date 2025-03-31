@@ -23,7 +23,7 @@ public:
     void reset();
     void render(float** outputBuffers, int sampleCount);
     void midiMessage(uint8_t data0, uint8_t data1, uint8_t data2);
-    
+	void updateADSR(float attack, float decay, float sustain, float release);
 private:
     void noteOn(int note, int velocity);
     void noteOff(int note);

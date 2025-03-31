@@ -27,5 +27,5 @@ struct Voice {
     int note;
 //    int velocity;
     Oscillator osc;
-    
+    juce::ADSR env;
 };
