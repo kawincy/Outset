@@ -80,6 +80,7 @@ void Synth::noteOff(int note)
 
 void Synth::updateADSR(float attack, float decay, float sustain, float release)
 {
+    // will eventually need to iterate on our vector of voices
 	voice.env.setParameters({ attack, decay, sustain, release });
 }
 

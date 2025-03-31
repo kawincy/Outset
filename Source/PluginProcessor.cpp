@@ -172,6 +172,26 @@ void OutsetAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce:
 	double release1 = apvts.getRawParameterValue("RELEASE_1")->load();
     double fine1 = apvts.getRawParameterValue("FINE_1")->load();
 
+    const int numOperators = 6;
+
+	std::vector<double> level(numOperators);
+	std::vector<double> fine(numOperators);
+	std::vector<double> coarse(numOperators);
+    std::vector<double> attack(numOperators);
+	std::vector<double> decay(numOperators);
+	std::vector<double> sustain(numOperators);
+	std::vector<double> release(numOperators);
+
+    for (int i = 0; i < numOperators; ++i) {
+		level[i] = apvts.getRawParameterValue("LEVEL_" + juce::String(i + 1))->load();
+		fine[i] = apvts.getRawParameterValue("FINE_" + juce::String(i + 1))->load();
+		coarse[i] = apvts.getRawParameterValue("COARSE_" + juce::String(i + 1))->load();
+		attack[i] = apvts.getRawParameterValue("ATTACK_" + juce::String(i + 1))->load();
+		decay[i] = apvts.getRawParameterValue("DECAY_" + juce::String(i + 1))->load();
+		sustain[i] = apvts.getRawParameterValue("SUSTAIN_" + juce::String(i + 1))->load();
+		release[i] = apvts.getRawParameterValue("RELEASE_" + juce::String(i + 1))->load();
+    }
+
 
     //DBG(cutoff);
     //DBG(attack3);
