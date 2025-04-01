@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include "AlgoBoxComp.h"
 #include <JuceHeader.h>
 
 //==============================================================================
@@ -27,9 +28,10 @@ public:
 
 private:
     int algo_ind;
-    std::unique_ptr<juce::DrawableButton> next_b;
-    std::unique_ptr<juce::DrawableButton> prev_b;
-    juce::Image image;
-    juce::Array<juce::Image> images;
+
+    AlgoBoxComp test;
+    AlgoBoxComp test2;
+
+    AlgoBoxComp grid[4][6];
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LFOComp)
 };
