@@ -19,12 +19,15 @@ public:
     void resized() override;
     void set_num(int num);
     void set_carrier(bool carrier);
+    void set_existance(bool e);
 private:
     std::string num_s;
     bool is_carrier;
+    bool exists;
 
     juce::Colour mainBlue;
     juce::Colour accentBlue;
     juce::Colour offBlue;
+
 
 };
