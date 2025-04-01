@@ -78,12 +78,8 @@ float Operator::getNextSample()
 	float output = 0.f;
 	//placeholder operator interaction
 	if (modOperator != nullptr) { 
-		// placeholder modulation depth of 100
 		float modsample = modOperator->getNextSample();
-	/*	DBG("modsample: " << modsample);
-		DBG("Modulator: " << modOperator->opIndex);*/
 		float current_freq = frequency;
-		//DBG("Next freq: " << current_freq + modsample);
 		setFrequency(current_freq + 10 * modsample);
 	}
 	output = osc.nextSample() * osc.amplitude * level * currentEnv;
@@ -103,6 +99,7 @@ void Operator::updateLevel(float level_)
 void Operator::noteOn(int note, int velocity)
 {
 	float freq = ratio * 440.0f * std::exp2(float(note - 69) / 12.0f); //this is the midi to freq formula
+	DBG("Operator " << opIndex << " initial freq: " << freq);
 	setFrequency(freq);
 	osc.amplitude = (velocity / 127.0f) * 0.5f;	
 	env.noteOn();

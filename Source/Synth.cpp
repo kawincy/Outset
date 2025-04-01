@@ -59,7 +59,7 @@ void Synth::render(float** outputBuffers, int sampleCount)
 void Synth::noteOn(int note, int velocity) 
 {
     voice.note = note;
-      
+	DBG("Note on: " << note);
     for (int i = 0; i < 6; i++)
     {
         voice.op[i].noteOn(note, velocity);
