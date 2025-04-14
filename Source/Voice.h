@@ -17,28 +17,59 @@ struct Voice {
         for (int i = 0; i < 6; i++)
         {
             op.emplace_back(i);
-            // example algo implementation:
+            op[i].init(i);
         }
-        op[0].setModOperator(&op[1]);
+        op[0].addModOperator(&op[1]);
         DBG("Op " << 0 << "modulated by Op " << 1);
         for (int i = 2; i < 5; i++) {
-            op[i].setModOperator(&op[i + 1]);
+            op[i].addModOperator(&op[i + 1]);
             DBG("Op " << i << "modulated by Op " << i + 1);
         }
+		op[0].setCarrier(true);
+        op[2].setCarrier(true);
     }
     
-    void reset() {
+    void reset(float sampleRate) {
         note = -1;
-//        velocity = 0;
+        for (int i = 0; i < 6; i++)
+        {
+			op[i].reset(sampleRate);
+            op[i].resetCache();
+        }
     }
-    
+
+    void resetCache() {
+        for (int i = 0; i < 6; i++)
+        {
+            op[i].resetCache();
+        }
+    }
     float render()
     {
-        // example algo: ops 1/3 are carriers
-        return op[0].getNextSample() + op[2].getNextSample();
-        //osc.reset(); Not sure why this is here?
+		float output = 0.f;
+        uint8_t numCarriers = 0;
+        for (int i = 0; i < 6; i++)
+        {
+			if (op[i].isCarrier()) {
+				numCarriers++;
+				output += op[i].getNextSample();
+			}
+        }
+		jassert(numCarriers > 0); // This shouldn't happen
+		return output / float(numCarriers); // average over all carriers
     }
-    
+	void noteOn(int note_, int velocity) {
+		for (int i = 0; i < 6; i++)
+		{
+            note = note_;
+
+			op[i].noteOn(note_, velocity);
+		}
+	}
+    void noteOff() {
+        for (int i = 0; i < 6; i++)
+            op[i].noteOff();
+    }
     int note;
 //    int velocity;
     std::vector<Operator> op;

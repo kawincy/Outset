@@ -10,12 +10,11 @@
 
 #pragma once
 #include <cmath>
-
+#include <JuceHeader.h>
 const float TWO_PI = 6.2831853071795864f;
 class Oscillator {
 public:
     float amplitude; 
-    float phase;
 //    float freq;
 //    float sampleRate; 
 //    float phaseOffset;
@@ -32,7 +31,6 @@ public:
         if (phase >= 1.0f) {
             phase -= 1.0f;
         }
-        
         return std::sin(TWO_PI * phase);
 //        float output = amplitude * std::sin(TWO_PI * sampleIndex * freq / sampleRate + phaseOffset);
 //        sampleIndex += 1;
@@ -47,7 +45,13 @@ public:
         freq = freq_;
         inc = freq / sampleRate;
     }
+    float getPhase()
+    {
+		return phase;
+    }
 private:
+    float phase;
+
     float freq;
     float inc;
 

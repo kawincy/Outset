@@ -23,6 +23,7 @@ OutsetAudioProcessor::OutsetAudioProcessor()
 #endif
 {
     filter = std::make_unique<Filters>();
+    scope = std::make_unique<Scope>();
 }
 
 OutsetAudioProcessor::~OutsetAudioProcessor()
@@ -209,6 +210,7 @@ void OutsetAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce:
     splitBufferByEvents(buffer, midiMessages);
     filter->processBlock(buffer);
     
+	scope->setAudioData(buffer);
     
     
     //uncomment these to check that parameters and sliders are linked

@@ -1,9 +1,9 @@
 /*
   ==============================================================================
 
-    Operator.cpp
-    Created: 31 Mar 2025 1:37:36pm
-    Author:  ryanb
+	Operator.cpp
+	Created: 31 Mar 2025 1:37:36pm
+	Author:  ryanb
 
   ==============================================================================
 */
@@ -26,30 +26,51 @@ Operator::Operator(int index)
 	level = 0.5f;
 	osc.amplitude = 0.5f;
 	ratio = 1.f;
-	setFrequency(261);
+	frequency = 261.63f;
+	setFrequency(261.63f);
 }
 
 Operator::~Operator()
 {
 }
 
-void Operator::init(int opIndex_)
+void Operator::init(int opIndex_) // deprecated
 {
 	opIndex = opIndex_;
 	env.setSampleRate(48000);
 	env.setParameters({ 0.1f, 0.1f, 0.8f, 0.1f });
+	freqSmooth.reset(int(50));
+	ampSmooth.reset(int(50));
+
 }
 
 void Operator::reset(float fs) {
 	fs = sampleRate;
 	env.setSampleRate(fs);
 	osc.reset();
-}
+	freqSmooth.reset(int(50));
+	ampSmooth.reset(int(50));
 
+}
+void Operator::resetCache() {
+	cached = false;
+	//lastSample = 0.f;
+	cachedSample = 0.f;
+}
+float Operator::getCachedSample()
+{
+	if (!cached)
+	{
+		cachedSample = getNextSample();
+		cached = true;
+	}
+	return cachedSample;
+}
 void Operator::setFrequency(float freq_)
 {
-	frequency = freq_;
-	osc.setFrequency(frequency, sampleRate);
+	//freqSmooth.setTargetValue(freq_);
+	//osc.setFrequency(freqSmooth.getNextValue(), sampleRate);
+	osc.setFrequency(freq_, sampleRate);
 }
 
 void Operator::updateEnvParams(float attack, float decay, float sustain, float release)
@@ -67,22 +88,37 @@ void Operator::setLevel(float level_)
 	level = level_;
 }
 
-void Operator::setModOperator(Operator* modulator)
+void Operator::addModOperator(Operator* mod)
 {
-	modOperator = modulator;
+	modOperators.push_back(mod);
 }
+
+
 
 float Operator::getNextSample()
 {
 	float currentEnv = env.getNextSample();
 	float output = 0.f;
-	//placeholder operator interaction
-	if (modOperator != nullptr) { 
-		float modsample = modOperator->getNextSample();
-		float current_freq = frequency;
-		setFrequency(current_freq + 10 * modsample);
+	float modSample = 0.f;
+	if (feedback)
+	{
+		modSample += lastSample;
 	}
-	output = osc.nextSample() * osc.amplitude * level * currentEnv;
+	if (!modOperators.empty()) {
+		for (auto mod : modOperators)
+		{
+			if (mod != nullptr) {
+				modSample += mod->getCachedSample();
+			}
+		}
+	}
+
+
+	setFrequency(frequency + 1000 * modSample);
+
+	ampSmooth.setTargetValue(osc.amplitude * level * currentEnv);
+	output = osc.nextSample() * ampSmooth.getNextValue();
+	lastSample = (output + lastSample) / 2.f; // This seeks to emulate the averaging filter of the DX7
 	return output;
 }
 
@@ -100,9 +136,12 @@ void Operator::noteOn(int note, int velocity)
 {
 	float freq = ratio * 440.0f * std::exp2(float(note - 69) / 12.0f); //this is the midi to freq formula
 	DBG("Operator " << opIndex << " initial freq: " << freq);
-	setFrequency(freq);
-	osc.amplitude = (velocity / 127.0f) * 0.5f;	
+	//setFrequency(freq);
+	frequency = freq;
+	osc.amplitude = (velocity / 127.0f) * 0.5f;
 	env.noteOn();
+	DBG("Operator " << opIndex << " second freq: " << osc.getFrequency());
+
 }
 void Operator::noteOff()
 {

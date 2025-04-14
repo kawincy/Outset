@@ -32,7 +32,7 @@ void Synth::deallocateResources()
 
 void Synth::reset()
 {
-    voice.reset();
+    voice.reset(sampleRate);
     noiseGen.reset();
 }
 
@@ -40,6 +40,7 @@ void Synth::render(float** outputBuffers, int sampleCount)
 { //noise rendering from book. will replace with osc code later
     float* outputBufferLeft = outputBuffers[0];
     float* outputBufferRight = outputBuffers[1];
+    //std::vector<float> freq1, freq2;
     for (int sample = 0; sample < sampleCount; ++sample) {
 //        float noise = noiseGen.nextValue();
         
@@ -53,7 +54,11 @@ void Synth::render(float** outputBuffers, int sampleCount)
         if (outputBufferRight != nullptr) {//conditional check for stereo
             outputBufferRight[sample] = output;
         }
+        voice.resetCache();
+		//freq1.push_back(voice.op[0].osc.getFrequency());
+		//freq2.push_back(voice.op[1].osc.getFrequency());
     }
+	//DBG("Freq1: " << freq1.back() << " Freq2: " << freq2.back());
 }
 
 void Synth::noteOn(int note, int velocity) 
@@ -81,6 +86,7 @@ void Synth::noteOff(int note)
         {
             voice.op[i].noteOff();
         }
+        DBG("NOTE OFF " << note);
         voice.note = -1;
 		//voice.env.noteOff();
         //voice.osc.amplitude = 0; // not from the book. put this here to make the sin wave turn off

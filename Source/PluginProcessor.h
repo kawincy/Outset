@@ -11,6 +11,7 @@
 #include <JuceHeader.h>
 #include "Synth.h"
 #include "DSP/Filters.h"
+#include "GUI/Scope.h"
 //==============================================================================
 /**
 */
@@ -57,16 +58,16 @@ public:
     
     juce::AudioProcessorValueTreeState::ParameterLayout createAudioParameters();
     juce::AudioProcessorValueTreeState apvts {*this, nullptr, "Parameters", createAudioParameters()};
-
+	juce::AudioBuffer<float> getAudioData() { return lastBuffer; }
 private:
     juce::MidiKeyboardState keyboardState;
     void splitBufferByEvents(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages);
     void handleMIDI(uint8_t data0, uint8_t data1, uint8_t data2);
     void render(juce::AudioBuffer<float>& buffer, int sampleCount, int bufferOffset);
-    
+    juce::AudioBuffer<float> lastBuffer;
 	std::unique_ptr<Filters> filter;
     Synth synth;
-
+    std::unique_ptr<Scope> scope;
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (OutsetAudioProcessor)
 };
