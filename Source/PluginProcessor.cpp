@@ -330,19 +330,19 @@ juce::AudioProcessorValueTreeState::ParameterLayout OutsetAudioProcessor::create
             juce::ParameterID("COARSE_" + juce::String(i), 1),
             "Coarse" + juce::String(i),
             coarseRange,
-            1.0f));
+            0.0f));
     }
 	// Ratio Parameters (6)
-    auto skewMidPoint = 1.0f; // Set your desired midpoint value here
+    auto skewRatio = 1.0f; // Set your desired midpoint value here
 
     juce::NormalisableRange<float> ratioRange = juce::NormalisableRange<float>(
         0.01f, 9.f,
-        [skewMidPoint](float start, float end, float normalised)
+        [skewRatio](float start, float end, float normalised)
         {
             // Apply skew first
             float skewedNormalised = normalised < 0.5f
-                ? juce::jmap(normalised, 0.0f, 0.5f, 0.0f, skewMidPoint / (end - start))
-                : juce::jmap(normalised, 0.5f, 1.0f, skewMidPoint / (end - start), 1.0f);
+                ? juce::jmap(normalised, 0.0f, 0.5f, 0.0f, skewRatio / (end - start))
+                : juce::jmap(normalised, 0.5f, 1.0f, skewRatio / (end - start), 1.0f);
 
             float value = juce::jmap(skewedNormalised, start, end);
 
@@ -350,10 +350,10 @@ juce::AudioProcessorValueTreeState::ParameterLayout OutsetAudioProcessor::create
             return (value < 2.0f) ? std::round(value * 100.0f) / 100.0f : std::round(value);
         },
         // Value-to-normalised lambda (with inverse skew)
-        [skewMidPoint](float start, float end, float value)
+        [skewRatio](float start, float end, float value)
         {
             float proportion = (value - start) / (end - start);
-            float skewProportion = skewMidPoint / (end - start);
+            float skewProportion = skewRatio / (end - start);
 
             float normalised = proportion < skewProportion
                 ? juce::jmap(proportion, 0.0f, skewProportion, 0.0f, 0.5f)

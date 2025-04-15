@@ -23,10 +23,10 @@ OscComp::OscComp(int num, juce::AudioProcessorValueTreeState& apvtsRef)
 {
 	
     // setup the sliders
-    initializeSlider(oscLevelSlider, oscLevelLabel, "Level", juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag, 0.0, 1.0, 0.01, 0.5);
-    initializeSlider(oscFineSlider, oscFineLabel, "Fine", juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag, -100.0, 100.0, 1.0, 0.0);
-    initializeSlider(oscCoarseSlider, oscCoarseLabel, "Coarse", juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag, -12.0, 12.0, 1.0, 1.0);
-    initializeSlider(oscRatioSlider, oscRatioLabel, "Ratio", juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag, 0.01, 9.0, 0.01, 1.0, 1.0);
+    initializeSlider(oscLevelSlider, oscLevelLabel, "Level", juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag, 0.5);
+    initializeSlider(oscFineSlider, oscFineLabel, "Fine", juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag, 0.0);
+    initializeSlider(oscCoarseSlider, oscCoarseLabel, "Coarse", juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag, 0.0);
+    initializeSlider(oscRatioSlider, oscRatioLabel, "Ratio", juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag, 1.0, 1.0);
 
     for (auto* slider : {&oscLevelSlider, &oscFineSlider, &oscCoarseSlider, &oscRatioSlider})
     {
@@ -61,7 +61,7 @@ void OscComp::paint(juce::Graphics& g)
     juce::Path wavePath;
     float amplitude = height / 2.0f * oscLevelSlider.getValue();
     float centerY = graphBounds.getCentreY();
-    float ratio = oscCoarseSlider.getValue();
+    float ratio = oscRatioSlider.getValue();
     float fineTune = oscFineSlider.getValue() / 25.0f;
     
     // The thing about fractional ratios
@@ -157,26 +157,26 @@ void OscComp::resized()
 
 }
 
-void OscComp::initializeSlider(juce::Slider& slider, juce::Label& label, const juce::String& name, juce::Slider::SliderStyle style, double min, double max, double interval, double initialValue)
+void OscComp::initializeSlider(juce::Slider& slider, juce::Label& label, const juce::String& name, juce::Slider::SliderStyle style, double initialValue)
 {
     addAndMakeVisible(slider);
     slider.setSliderStyle(style);
     slider.setTextBoxStyle(juce::Slider::NoTextBox, false, 50, 20);
     //slider.setRange(min, max, interval);
-    slider.setValue(initialValue);
+    //slider.setValue(initialValue);
     slider.addListener(this);
     slider.setDoubleClickReturnValue(true, initialValue);
 
     addAndMakeVisible(label);
     label.setText(name, juce::dontSendNotification);
 }
-void OscComp::initializeSlider(juce::Slider& slider, juce::Label& label, const juce::String& name, juce::Slider::SliderStyle style, double min, double max, double interval, double initialValue, double midpointValue)
+void OscComp::initializeSlider(juce::Slider& slider, juce::Label& label, const juce::String& name, juce::Slider::SliderStyle style, double initialValue, double midpointValue)
 {
     addAndMakeVisible(slider);
     slider.setSliderStyle(style);
     slider.setTextBoxStyle(juce::Slider::NoTextBox, false, 50, 20);
     //slider.setRange(min, max, interval);
-    slider.setValue(initialValue);
+    //slider.setValue(initialValue);
     slider.addListener(this);
     slider.setDoubleClickReturnValue(true, initialValue);
     slider.setSkewFactorFromMidPoint(midpointValue);
