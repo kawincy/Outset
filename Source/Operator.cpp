@@ -114,7 +114,7 @@ float Operator::getNextSample()
 	}
 
 
-	setFrequency(frequency + 1000 * modSample);
+	setFrequency(frequency + 10000 * modSample);
 
 	ampSmooth.setTargetValue(osc.amplitude * level * currentEnv);
 	output = osc.nextSample() * ampSmooth.getNextValue();
