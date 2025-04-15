@@ -5,6 +5,8 @@
               pluginCharacteristicsValue="pluginIsSynth,pluginProducesMidiOut,pluginWantsMidiIn">
   <MAINGROUP id="YW4tEd" name="Outset">
     <GROUP id="{08B4255C-6792-1333-C4D2-110BD672E3EA}" name="Source">
+      <FILE id="dU77Tv" name="Operator.cpp" compile="1" resource="0" file="Source/Operator.cpp"/>
+      <FILE id="bvIe14" name="Operator.h" compile="0" resource="0" file="Source/Operator.h"/>
       <FILE id="SKB858" name="Voice.h" compile="0" resource="0" file="Source/Voice.h"/>
       <FILE id="N9EXJq" name="Synth.cpp" compile="1" resource="0" file="Source/Synth.cpp"/>
       <FILE id="wKSYp9" name="Synth.h" compile="0" resource="0" file="Source/Synth.h"/>
@@ -16,6 +18,7 @@
         <FILE id="LYGaEL" name="Oscillator.h" compile="0" resource="0" file="Source/DSP/Oscillator.h"/>
       </GROUP>
       <GROUP id="{D000975A-FD13-24BE-CFE2-76B8EFA2C9CE}" name="GUI">
+        <FILE id="SAvITy" name="Scope.h" compile="0" resource="0" file="Source/GUI/Scope.h"/>
         <GROUP id="{B02D3D08-A9D3-894C-D0E2-70D7EDCB3FA2}" name="images">
           <FILE id="EdCQT8" name="algorithm_1.png" compile="0" resource="1" file="Images/algorithm_1.png"/>
           <FILE id="NUsrza" name="algorithm_2.png" compile="0" resource="1" file="Images/algorithm_2.png"/>

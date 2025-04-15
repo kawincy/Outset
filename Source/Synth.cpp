@@ -14,10 +14,15 @@
 Synth::Synth()
 {
 //    sampleRate = 48000.0f;
+    voice.init();
 }
 void Synth::allocateResources(double sampleRate_, int /*samplesPerBlock*/)
 {
     sampleRate = static_cast<float>(sampleRate_); 
+	voice.env.setSampleRate(sampleRate);
+	for (int i = 0; i < 6; i++) {
+		voice.op[i].reset(sampleRate);
+	}
 }
 
 void Synth::deallocateResources() 
@@ -27,7 +32,7 @@ void Synth::deallocateResources()
 
 void Synth::reset()
 {
-    voice.reset();
+    voice.reset(sampleRate);
     noiseGen.reset();
 }
 
@@ -35,42 +40,68 @@ void Synth::render(float** outputBuffers, int sampleCount)
 { //noise rendering from book. will replace with osc code later
     float* outputBufferLeft = outputBuffers[0];
     float* outputBufferRight = outputBuffers[1];
-    
+    //std::vector<float> freq1, freq2;
     for (int sample = 0; sample < sampleCount; ++sample) {
 //        float noise = noiseGen.nextValue();
         
         float output = 0.0f; 
-        if (voice.note > -1) {
-            output = voice.render();
-        }
+        //if (voice.note > -1) {
+		//voice.osc.amplitude = voice.env.getNextSample();
+        output = voice.render();
+        //}
         
         outputBufferLeft[sample] = output; 
         if (outputBufferRight != nullptr) {//conditional check for stereo
             outputBufferRight[sample] = output;
         }
+        voice.resetCache();
+		//freq1.push_back(voice.op[0].osc.getFrequency());
+		//freq2.push_back(voice.op[1].osc.getFrequency());
     }
+	//DBG("Freq1: " << freq1.back() << " Freq2: " << freq2.back());
 }
 
 void Synth::noteOn(int note, int velocity) 
 {
     voice.note = note;
-    
-    float freq = freq = 440.0f * std::exp2(float(note - 69) / 12.0f); //this is the midi to freq formula
-    
-    voice.osc.amplitude = (velocity / 127.0f) * 0.5f;
-    voice.osc.inc = freq/sampleRate;
+	DBG("Note on: " << note);
+    for (int i = 0; i < 6; i++)
+    {
+        voice.op[i].noteOn(note, velocity);
+    }
+	//voice.env.noteOn();
+
+    //voice.osc.amplitude = (velocity / 127.0f) * 0.5f;
+    //voice.osc.inc = freq/sampleRate;
 //    voice.osc.freq = 261.63f; //middle c
 //    voice.osc.sampleRate = sampleRate;
 //    voice.osc.phaseOffset = 0.0f;
-    voice.osc.reset();
+    //voice.osc.reset();
 }
 void Synth::noteOff(int note) 
 {
+
     if (voice.note == note) { 
+        for (int i = 0; i < 6; i++)
+        {
+            voice.op[i].noteOff();
+        }
+        DBG("NOTE OFF " << note);
         voice.note = -1;
-        voice.osc.amplitude = 0; // not from the book. put this here to make the sin wave turn off
+		//voice.env.noteOff();
+        //voice.osc.amplitude = 0; // not from the book. put this here to make the sin wave turn off
 //        voice.velocity = 0;
     }
+}
+void Synth::updateOsc(float fine, float coarse, float level, int index)
+{
+    voice.op[index].updateRatio(coarse);
+    voice.op[index].updateLevel(level);
+}
+void Synth::updateADSR(float attack, float decay, float sustain, float release, int index)
+{
+	// will eventually directly update a selected operator with an additional int index input
+	voice.op[index].updateEnvParams(attack, decay, sustain, release);
 }
 
 void Synth::midiMessage(uint8_t data0, uint8_t data1, uint8_t data2)
