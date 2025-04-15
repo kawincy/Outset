@@ -51,14 +51,20 @@ resonanceAttachment(apvtsRef, "RESONANCE", resonanceSlider)
     addAndMakeVisible(qLabel);
 
 
-    for (auto* textbox : { &cutoffTextBox, &resonanceTextBox }) {
-        textbox->setMultiLine(false);
-        textbox->setReturnKeyStartsNewLine(false);
-        textbox->setText(juce::String(cutoffSlider.getValue()), false);
-        textbox->setJustification(juce::Justification::centredTop);
-        textbox->applyFontToAllText(juce::Font(juce::FontOptions(12.0f, juce::Font::plain)));
-        textbox->applyColourToAllText(colors().main);
-    }
+    //for (auto* textbox : { &cutoffTextBox, &resonanceTextBox }) {
+        cutoffTextBox.setMultiLine(false);
+        cutoffTextBox.setReturnKeyStartsNewLine(false);
+        cutoffTextBox.setText(juce::String(cutoffSlider.getValue()), false);
+        cutoffTextBox.setJustification(juce::Justification::centredTop);
+        cutoffTextBox.applyFontToAllText(juce::Font(juce::FontOptions(12.0f, juce::Font::plain)));
+        cutoffTextBox.applyColourToAllText(colors().main);
+        resonanceTextBox.setMultiLine(false);
+        resonanceTextBox.setReturnKeyStartsNewLine(false);
+        resonanceTextBox.setText(juce::String(resonanceSlider.getValue()), false);
+        resonanceTextBox.setJustification(juce::Justification::centredTop);
+        resonanceTextBox.applyFontToAllText(juce::Font(juce::FontOptions(12.0f, juce::Font::plain)));
+        resonanceTextBox.applyColourToAllText(colors().main);
+    //}
 
     // Cutoff text box setup
     cutoffTextBox.onReturnKey = [this] {

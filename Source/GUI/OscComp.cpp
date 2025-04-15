@@ -17,27 +17,31 @@ OscComp::OscComp(int num, juce::AudioProcessorValueTreeState& apvtsRef)
       apvtsRef(apvtsRef),
       levelAttachment(apvtsRef, "LEVEL_" + std::to_string(oscNum), oscLevelSlider),
       fineAttachment(apvtsRef, "FINE_" + std::to_string(oscNum), oscFineSlider),
-      coarseAttachment(apvtsRef, "COARSE_" + std::to_string(oscNum), oscCoarseSlider)
+      coarseAttachment(apvtsRef, "COARSE_" + std::to_string(oscNum), oscCoarseSlider),
+	  ratioAttachment(apvtsRef, "RATIO_" + std::to_string(oscNum), oscRatioSlider)
       
 {
+	
     // setup the sliders
     initializeSlider(oscLevelSlider, oscLevelLabel, "Level", juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag, 0.0, 1.0, 0.01, 0.5);
     initializeSlider(oscFineSlider, oscFineLabel, "Fine", juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag, 0.0, 100.0, 1.0, 0.0);
     initializeSlider(oscCoarseSlider, oscCoarseLabel, "Coarse", juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag, 1.0, 12.0, 1.0, 1.0);
-    
-    for (auto* slider : {&oscLevelSlider, &oscFineSlider, &oscCoarseSlider})
+    initializeSlider(oscRatioSlider, oscRatioLabel, "Ratio", juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag, 0.01, 9.0, 0.01, 1.0, 1.0);
+
+    for (auto* slider : {&oscLevelSlider, &oscFineSlider, &oscCoarseSlider, &oscRatioSlider})
     {
         slider->setColour(juce::Slider::rotarySliderFillColourId, colors().main);
         slider->setColour(juce::Slider::rotarySliderOutlineColourId, colors().accent);
         slider->setColour(juce::Slider::thumbColourId, colors().white);
     }
     
-    for (auto* label : {&oscLevelLabel, &oscFineLabel, &oscCoarseLabel})
+    for (auto* label : {&oscLevelLabel, &oscFineLabel, &oscCoarseLabel, &oscRatioLabel})
     {
         label->setFont(juce::Font(juce::FontOptions(14.0f, juce::Font::bold)));
         label->setColour(juce::Label::textColourId, colors().main);
         label->setJustificationType(juce::Justification::centred);
     }
+
 }
 
 void OscComp::paint(juce::Graphics& g)
@@ -114,6 +118,9 @@ void OscComp::paint(juce::Graphics& g)
     g.drawText(valueStr(oscCoarseSlider.getValue()),
               oscCoarseSlider.getBounds().translated(0, -15),
               juce::Justification::centred);
+    g.drawText(valueStr(oscRatioSlider.getValue()),
+              oscRatioSlider.getBounds().translated(0, -15),
+              juce::Justification::centred);
 }
 
 void OscComp::resized()
@@ -126,23 +133,27 @@ void OscComp::resized()
     
     // bottom half is sliders
     auto sliderArea = bounds;
-    auto sliderWidth = sliderArea.getWidth() / 3;
+    auto sliderWidth = sliderArea.getWidth() / 4;
     
     auto knobSize = juce::jmin(sliderWidth * 0.6f, 35.0f);
     
     // align
     auto levelArea = sliderArea.removeFromLeft(sliderWidth);
     auto fineArea = sliderArea.removeFromLeft(sliderWidth);
+	auto coarseArea = sliderArea.removeFromLeft(sliderWidth);
     auto ratioArea = sliderArea;
     
     oscLevelSlider.setBounds(levelArea.withSizeKeepingCentre(knobSize, knobSize));
     oscFineSlider.setBounds(fineArea.withSizeKeepingCentre(knobSize, knobSize));
-    oscCoarseSlider.setBounds(ratioArea.withSizeKeepingCentre(knobSize, knobSize));
+    oscCoarseSlider.setBounds(coarseArea.withSizeKeepingCentre(knobSize, knobSize));
+    oscRatioSlider.setBounds(ratioArea.withSizeKeepingCentre(knobSize, knobSize));
     
     // labels below sliders
     oscLevelLabel.setBounds(oscLevelSlider.getBounds().withHeight(20).translated(0, knobSize/2 + 5));
     oscFineLabel.setBounds(oscFineSlider.getBounds().withHeight(20).translated(0, knobSize/2 + 5));
     oscCoarseLabel.setBounds(oscCoarseSlider.getBounds().withHeight(20).translated(0, knobSize/2 + 5));
+    oscRatioLabel.setBounds(oscRatioSlider.getBounds().withHeight(20).translated(0, knobSize / 2 + 5));
+
 }
 
 void OscComp::initializeSlider(juce::Slider& slider, juce::Label& label, const juce::String& name, juce::Slider::SliderStyle style, double min, double max, double interval, double initialValue)
@@ -154,7 +165,21 @@ void OscComp::initializeSlider(juce::Slider& slider, juce::Label& label, const j
     slider.setValue(initialValue);
     slider.addListener(this);
     slider.setDoubleClickReturnValue(true, initialValue);
-    
+
+    addAndMakeVisible(label);
+    label.setText(name, juce::dontSendNotification);
+}
+void OscComp::initializeSlider(juce::Slider& slider, juce::Label& label, const juce::String& name, juce::Slider::SliderStyle style, double min, double max, double interval, double initialValue, double midpointValue)
+{
+    addAndMakeVisible(slider);
+    slider.setSliderStyle(style);
+    slider.setTextBoxStyle(juce::Slider::NoTextBox, false, 50, 20);
+    slider.setRange(min, max, interval);
+    slider.setValue(initialValue);
+    slider.addListener(this);
+    slider.setDoubleClickReturnValue(true, initialValue);
+    slider.setSkewFactorFromMidPoint(midpointValue);
+
     addAndMakeVisible(label);
     label.setText(name, juce::dontSendNotification);
 }

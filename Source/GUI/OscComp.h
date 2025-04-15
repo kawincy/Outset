@@ -23,6 +23,8 @@ public:
 
 private:
     void initializeSlider(juce::Slider& slider, juce::Label& label, const juce::String& name, juce::Slider::SliderStyle style, double min, double max, double interval, double initialValue);
+    void initializeSlider(juce::Slider& slider, juce::Label& label, const juce::String& name, juce::Slider::SliderStyle style, double min, double max, double interval, double initialValue, double midpointValue);
+
     void setSliderBounds(juce::Slider& slider, juce::Label& label, juce::Rectangle<int> bounds);
     void drawSliderOutline(juce::Graphics& g, juce::Slider& slider);
     void addLabel(juce::Slider& slider, juce::Label& label, const juce::String& name);
@@ -35,14 +37,17 @@ private:
     juce::Slider oscLevelSlider;
     juce::Slider oscFineSlider;
     juce::Slider oscCoarseSlider;
-    
+    juce::Slider oscRatioSlider;
+
     juce::AudioProcessorValueTreeState::SliderAttachment levelAttachment;
     juce::AudioProcessorValueTreeState::SliderAttachment fineAttachment;
     juce::AudioProcessorValueTreeState::SliderAttachment coarseAttachment;
+    juce::AudioProcessorValueTreeState::SliderAttachment ratioAttachment;
 
     juce::Label oscLevelLabel;
     juce::Label oscFineLabel;
     juce::Label oscCoarseLabel;
+    juce::Label oscRatioLabel;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(OscComp)
 };
