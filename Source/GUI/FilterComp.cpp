@@ -256,8 +256,8 @@ void FilterComp::paint(juce::Graphics& g)
     float freq = cutoffSlider.getValue();
     float q = resonanceSlider.getValue();
 
-    cutoffTextBox.setBounds(cutoffSlider.getX()-2, cutoffSlider.getY() - 12, 40, 17);
-    resonanceTextBox.setBounds(resonanceSlider.getX()-2, resonanceSlider.getY() - 12, 40, 17);
+    cutoffTextBox.setBounds(cutoffSlider.getX() + 2, cutoffSlider.getY() - 12, 40, 17);
+    resonanceTextBox.setBounds(resonanceSlider.getX() + 2, resonanceSlider.getY() - 12, 40, 17);
 
 }
 
@@ -272,7 +272,7 @@ void FilterComp::resized()
     auto sliderArea = bounds;
     auto sliderWidth = sliderArea.getWidth() / 2;
 
-    auto knobSize = juce::jmin(sliderWidth * 0.6f, 35.0f);
+    auto knobSize = juce::jmin(sliderWidth * 0.6f, 45.f);
 
     auto cutoffArea = sliderArea.removeFromLeft(sliderWidth);
     auto resonanceArea = sliderArea;
