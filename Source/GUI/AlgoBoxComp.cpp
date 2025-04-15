@@ -9,16 +9,17 @@
 */
 
 #include "AlgoBoxComp.h"
+#include "Colors.h"
 #include <JuceHeader.h>
 
 AlgoBoxComp::AlgoBoxComp() {
     num_s = "1";
     is_carrier = false;
-    exists = true;
+    exists = false;
 
-    mainBlue = juce::Colour(0x91, 0xC9, 0xB5);
-    accentBlue = juce::Colour(0x5B, 0x8F, 0x7E);
-    offBlue = juce::Colour(0x36, 0x55, 0x4B);
+    mainBlue = juce::Colour(colors().main);
+    accentBlue = juce::Colour(colors().accent);
+    offBlue = juce::Colour(colors().carrier_blue);
 }
 
 AlgoBoxComp::~AlgoBoxComp() {
@@ -31,7 +32,7 @@ void AlgoBoxComp::paint(juce::Graphics& g) {
             g.fillAll(offBlue);
         }
         else {
-            g.fillAll(juce::Colour(0x1A, 0x1A, 0x1A));
+            g.fillAll(juce::Colour(colors().bg));
         }
 
         g.setColour(mainBlue);
