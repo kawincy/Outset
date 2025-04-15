@@ -14,7 +14,7 @@ Synth::Synth()
     : voiceHandler(8)   // initialize with a default polyphony of 8 voices
 {
     // Previously: voice.init();
-    // No additional initialization needed here—the VoiceHandler constructor builds the voices.
+    // No additional initialization needed hereâ€”the VoiceHandler constructor builds the voices.
 }
 
 void Synth::allocateResources(double sampleRate_, int /*samplesPerBlock*/)
