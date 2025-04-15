@@ -24,6 +24,8 @@ struct Colors {
     juce::Colour black = juce::Colour(0x00, 0x00, 0x00);
     
     juce::Colour gridlines = white.withAlpha(0.2f);
+
+    juce::Colour carrier_blue = juce::Colour(0x36, 0x55, 0x4B);
 };
 
 Colors &colors();

@@ -13,12 +13,70 @@
 #include "Colors.h"
 #include "LFOComp.h"
 
+
+// boxIndex[algorithm number][box numbers + feedback boxes][indices]
+// boxIndex[#][6 = feedback boxes][output, input]
+constexpr int boxInds[32][7][2] = {
+//      1      2      3      4      5      6      fb
+    { {3,2}, {2,2}, {3,3}, {2,3}, {1,3}, {0,3}, {6,6} }, // alg 1
+    { {3,2}, {2,2}, {3,3}, {2,3}, {1,3}, {0,3}, {2,2} },
+    { {3,2}, {2,2}, {1,2}, {3,3}, {2,3}, {1,3}, {6,6} },
+    { {3,2}, {2,2}, {1,2}, {3,3}, {2,3}, {1,3}, {4,6} },
+    { {3,2}, {2,2}, {3,3}, {2,3}, {3,4}, {2,4}, {6,6} }, // alg 5
+    { {3,2}, {2,2}, {3,3}, {2,3}, {3,4}, {2,4}, {5,6} },
+    { {3,2}, {2,2}, {3,3}, {2,3}, {2,4}, {1,4}, {6,6} },
+    { {3,2}, {2,2}, {3,3}, {2,3}, {2,4}, {1,4}, {4,4} },
+    { {3,2}, {2,2}, {3,3}, {2,3}, {2,4}, {1,4}, {2,2} },
+    { {3,3}, {2,3}, {1,3}, {3,2}, {2,1}, {2,2}, {3,3} }, // alg 10
+    { {3,3}, {2,3}, {1,3}, {3,2}, {2,1}, {2,2}, {6,6} },
+    { {3,3}, {2,3}, {3,1}, {2,0}, {2,1}, {2,2}, {2,2} },
+    { {3,3}, {2,3}, {3,1}, {2,0}, {2,1}, {2,2}, {6,6} },
+    { {3,2}, {2,2}, {3,3}, {2,3}, {1,3}, {1,4}, {6,6} },
+    { {3,2}, {2,2}, {3,3}, {2,3}, {1,3}, {1,4}, {2,2} }, // alg 15
+    { {3,3}, {2,2}, {2,3}, {1,3}, {2,4}, {1,4}, {6,6} },
+    { {3,3}, {2,2}, {2,3}, {1,3}, {2,4}, {1,4}, {2,2} },
+    { {3,3}, {2,2}, {2,3}, {2,4}, {1,4}, {0,4}, {3,3} },
+    { {3,1}, {2,1}, {1,1}, {3,2}, {3,3}, {2,2}, {6,6} },
+    { {3,1}, {3,2}, {2,1}, {3,4}, {2,3}, {2,4}, {3,3} }, // alg 20
+    { {3,1}, {3,2}, {2,1}, {3,3}, {3,4}, {2,3}, {3,3} },
+    { {3,1}, {2,1}, {3,2}, {3,3}, {3,4}, {2,3}, {6,6} },
+    { {3,1}, {2,2}, {3,2}, {3,3}, {3,4}, {2,3}, {6,6} },
+    { {3,0}, {3,1}, {3,2}, {3,3}, {3,4}, {2,3}, {6,6} },
+    { {3,0}, {3,1}, {3,2}, {3,3}, {3,4}, {2,3}, {6,6} }, // alg 25
+    { {3,1}, {3,2}, {2,2}, {3,4}, {2,3}, {2,4}, {6,6} },
+    { {3,1}, {3,2}, {2,2}, {3,4}, {2,3}, {2,4}, {3,3} },
+    { {3,2}, {2,2}, {3,3}, {2,3}, {1,3}, {3,4}, {5,5} },
+    { {3,1}, {3,2}, {3,3}, {2,3}, {3,4}, {2,4}, {6,6} },
+    { {3,1}, {3,2}, {3,3}, {2,3}, {1,3}, {3,4}, {5,5} }, // alg 30
+    { {3,0}, {3,1}, {3,2}, {3,3}, {3,4}, {2,4}, {6,6} },
+    { {3,0}, {3,1}, {3,2}, {3,3}, {3,4}, {3,5}, {6,6} },
+};
+
 LFOComp::LFOComp(juce::AudioProcessorValueTreeState& apvtsRef) : apvtsRef(apvtsRef)
 {
     // In your constructor, you should add any child components, and
     // initialise any special settings that your component needs.
     
-//    algo_ind = apvtsRef.getRawParameterValue("ALG_INDEX")->load();// joe code
+    setAlgIndexParameter(0);
+    algo_ind = 0;
+    
+    /*addAndMakeVisible(test);
+    addAndMakeVisible(test2);
+    test2.set_carrier(false);
+    test2.set_num(2);*/
+    
+    for (int r = 0; r < 4; r++) {
+        for (int c = 0; c < 6; c++) {
+            addAndMakeVisible(grid[r][c]);
+        }
+    }
+    rows = 4;
+    cols = 6;
+    box_width = 30;
+    box_height = 20;
+
+    spacing_x = 15;  // Space between columns
+    spacing_y = 20;  // Space between rows
 
     juce::Path next_trianglePath, prev_trianglePath;
     next_trianglePath.addTriangle(0, 0, 30, 15, 0, 30);
@@ -41,57 +99,43 @@ LFOComp::LFOComp(juce::AudioProcessorValueTreeState& apvtsRef) : apvtsRef(apvtsR
 
     // Attach button click logic
     next_b->onClick = [this, &apvtsRef = apvtsRef]() {
-
-        int algo_ind = (apvtsRef.getRawParameterValue("ALG_INDEX")->load());
-
-        setAlgIndexParameter((algo_ind + 1) % 32);
-
+        undraw_boxes();
+        algo_ind = apvtsRef.getRawParameterValue("ALG_INDEX")->load();
+        algo_ind = (algo_ind + 1) % 32;
+        setAlgIndexParameter(algo_ind);
         repaint();
     };
 
     prev_b->onClick = [this, &apvtsRef = apvtsRef]() {
-        int algo_ind = (apvtsRef.getRawParameterValue("ALG_INDEX")->load());
+        undraw_boxes();
+        algo_ind = apvtsRef.getRawParameterValue("ALG_INDEX")->load();
         if (--algo_ind == -1) algo_ind = 31;
         setAlgIndexParameter(algo_ind);
         repaint();
     };
 
-    images.add(juce::ImageFileFormat::loadFrom(BinaryData::algorithm_1_png, BinaryData::algorithm_1_pngSize));
-    images.add(juce::ImageFileFormat::loadFrom(BinaryData::algorithm_2_png, BinaryData::algorithm_2_pngSize));
-    images.add(juce::ImageFileFormat::loadFrom(BinaryData::algorithm_3_png, BinaryData::algorithm_3_pngSize));
-    images.add(juce::ImageFileFormat::loadFrom(BinaryData::algorithm_4_png, BinaryData::algorithm_4_pngSize));
-    images.add(juce::ImageFileFormat::loadFrom(BinaryData::algorithm_5_png, BinaryData::algorithm_5_pngSize));
-    images.add(juce::ImageFileFormat::loadFrom(BinaryData::algorithm_6_png, BinaryData::algorithm_6_pngSize));
-    images.add(juce::ImageFileFormat::loadFrom(BinaryData::algorithm_7_png, BinaryData::algorithm_7_pngSize));
-    images.add(juce::ImageFileFormat::loadFrom(BinaryData::algorithm_8_png, BinaryData::algorithm_8_pngSize));
-    images.add(juce::ImageFileFormat::loadFrom(BinaryData::algorithm_9_png, BinaryData::algorithm_9_pngSize));
-    images.add(juce::ImageFileFormat::loadFrom(BinaryData::algorithm_10_png, BinaryData::algorithm_10_pngSize));
-    images.add(juce::ImageFileFormat::loadFrom(BinaryData::algorithm_11_png, BinaryData::algorithm_11_pngSize));
-    images.add(juce::ImageFileFormat::loadFrom(BinaryData::algorithm_12_png, BinaryData::algorithm_12_pngSize));
-    images.add(juce::ImageFileFormat::loadFrom(BinaryData::algorithm_13_png, BinaryData::algorithm_13_pngSize));
-    images.add(juce::ImageFileFormat::loadFrom(BinaryData::algorithm_14_png, BinaryData::algorithm_14_pngSize));
-    images.add(juce::ImageFileFormat::loadFrom(BinaryData::algorithm_15_png, BinaryData::algorithm_15_pngSize));
-    images.add(juce::ImageFileFormat::loadFrom(BinaryData::algorithm_16_png, BinaryData::algorithm_16_pngSize));
-    images.add(juce::ImageFileFormat::loadFrom(BinaryData::algorithm_17_png, BinaryData::algorithm_17_pngSize));
-    images.add(juce::ImageFileFormat::loadFrom(BinaryData::algorithm_18_png, BinaryData::algorithm_18_pngSize));
-    images.add(juce::ImageFileFormat::loadFrom(BinaryData::algorithm_19_png, BinaryData::algorithm_19_pngSize));
-    images.add(juce::ImageFileFormat::loadFrom(BinaryData::algorithm_20_png, BinaryData::algorithm_20_pngSize));
-    images.add(juce::ImageFileFormat::loadFrom(BinaryData::algorithm_21_png, BinaryData::algorithm_21_pngSize));
-    images.add(juce::ImageFileFormat::loadFrom(BinaryData::algorithm_22_png, BinaryData::algorithm_22_pngSize));
-    images.add(juce::ImageFileFormat::loadFrom(BinaryData::algorithm_23_png, BinaryData::algorithm_23_pngSize));
-    images.add(juce::ImageFileFormat::loadFrom(BinaryData::algorithm_24_png, BinaryData::algorithm_24_pngSize));
-    images.add(juce::ImageFileFormat::loadFrom(BinaryData::algorithm_25_png, BinaryData::algorithm_25_pngSize));
-    images.add(juce::ImageFileFormat::loadFrom(BinaryData::algorithm_26_png, BinaryData::algorithm_26_pngSize));
-    images.add(juce::ImageFileFormat::loadFrom(BinaryData::algorithm_27_png, BinaryData::algorithm_27_pngSize));
-    images.add(juce::ImageFileFormat::loadFrom(BinaryData::algorithm_28_png, BinaryData::algorithm_28_pngSize));
-    images.add(juce::ImageFileFormat::loadFrom(BinaryData::algorithm_29_png, BinaryData::algorithm_29_pngSize));
-    images.add(juce::ImageFileFormat::loadFrom(BinaryData::algorithm_30_png, BinaryData::algorithm_30_pngSize));
-    images.add(juce::ImageFileFormat::loadFrom(BinaryData::algorithm_31_png, BinaryData::algorithm_31_pngSize));
-    images.add(juce::ImageFileFormat::loadFrom(BinaryData::algorithm_32_png, BinaryData::algorithm_32_pngSize));
+        
+    /*addAndMakeVisible(test);
+    addAndMakeVisible(test2);
+    test2.set_carrier(false);
+    test2.set_num(2);*/
+    
+    for (int r = 0; r < 4; r++) {
+        for (int c = 0; c < 6; c++) {
+            addAndMakeVisible(grid[r][c]);
+            if (r == 3) {
+                AlgoBoxComp& curr = grid[r][c];
+                curr.set_carrier(true);
+            }
+        }
+    }
+    rows = 4;
+    cols = 6;
+    box_width = 30;
+    box_height = 20;
 
-
-    image = images[(apvtsRef.getRawParameterValue("ALG_INDEX")->load())];
-   
+    spacing_x = 15;  // Space between columns
+    spacing_y = 20;  // Space between rows
 }
 
 LFOComp::~LFOComp()
@@ -101,44 +145,68 @@ LFOComp::~LFOComp()
 void LFOComp::paint (juce::Graphics& g)
 {
     juce::Rectangle<int> bounds = getLocalBounds();
-    g.fillAll(colors().bg);
 
-    g.setColour(colors().accent);
+    g.fillAll(juce::Colour(colors().bg));
+
+    g.setColour(juce::Colour(colors().accent));
+
+    auto select_width = bounds.getWidth() / 4;
+    auto select_area = bounds.removeFromLeft(select_width);
+
     g.drawRect(bounds, 1);
-
-    g.setColour(colors().black);
-    g.setFont(juce::FontOptions(14.0f));
-
-    int x = (bounds.getWidth() / 2) - bounds.getHeight() / 3;
-    int y = bounds.getHeight() - bounds.getHeight() / 8;
-    juce::Rectangle<int> centeredRect(bounds.getWidth()/8, 0, bounds.getWidth() * 3/ 4, bounds.getHeight() * 7 / 8);
-
-    g.setColour(colors().gridlines);
-    g.fillRect(centeredRect);
-
-    g.setColour(colors().main);
-    g.drawRect(centeredRect, 2);
-
-    image = images[static_cast<int>(apvtsRef.getRawParameterValue("ALG_INDEX")->load())];
-    if (image.isValid())
-    {
-        // Get component bounds and draw image centered
-        g.drawImageWithin(image, centeredRect.getX(), centeredRect.getY(), centeredRect.getWidth(), centeredRect.getHeight(),
-            juce::RectanglePlacement::yBottom);
-
-        g.drawText("Algorithm: " + std::to_string(static_cast<int>(apvtsRef.getRawParameterValue("ALG_INDEX")->load()) + 1), x, y + 2, bounds.getHeight() / 3 * 2, 20, juce::Justification::centred, true);
-    }
+    g.drawRect(select_area, 1);
+    
+    draw_boxes();
 }
 
 void LFOComp::resized()
 {
-    // This method is where you should set the bounds of any child
-    // components that your component contains..
-
     juce::Rectangle<int> bounds = getLocalBounds();
-
     next_b->setBounds(bounds.getWidth() * 2 / 3, bounds.getHeight() * 7 / 8 + 2, 18, 18);
     prev_b->setBounds(bounds.getWidth() / 3 - 20, bounds.getHeight() * 7 / 8 + 2, 18, 18);
+    auto select_width = bounds.getWidth() / 4;
+    juce::Rectangle<int> select_bounds = bounds.removeFromLeft(select_width);
+    juce::Rectangle<int> algo_bounds = bounds.reduced(10);
+
+    int total_grid_width = cols * (box_width + spacing_x) - spacing_x;
+    int total_grid_height = rows * (box_height + spacing_y) - spacing_y;
+
+    int startX = algo_bounds.getX() + (algo_bounds.getWidth() - total_grid_width) / 2;
+    int startY = algo_bounds.getY() + (algo_bounds.getHeight() - total_grid_height) / 2;
+    for (int r = 0; r < rows; r++)
+    {
+        for (int c = 0; c < cols; c++)
+        {
+            AlgoBoxComp& curr = grid[r][c];
+
+            int x = startX + c * (box_width + spacing_x);
+            int y = startY + r * (box_height + spacing_y);
+
+            curr.setBounds(x, y, box_width, box_height);  // Set fixed bounds
+        }
+    }
+}
+
+void LFOComp::draw_boxes() {
+    for (int i = 0; i < 6; i++)
+    {
+        int box_row = boxInds[algo_ind][i][0];
+        int box_col = boxInds[algo_ind][i][1];
+        AlgoBoxComp& curr = grid[box_row][box_col];
+
+        curr.set_num(i+1);
+        curr.set_existance(true);
+    }
+}
+
+void LFOComp::undraw_boxes() {
+    for (int i = 0; i < 6; i++)
+    {
+        int box_row = boxInds[algo_ind][i][0];
+        int box_col = boxInds[algo_ind][i][1];
+        AlgoBoxComp& curr = grid[box_row][box_col];
+        curr.set_existance(false);
+    }
 }
 
 void LFOComp::setAlgIndexParameter(int newValue)
@@ -149,3 +217,4 @@ void LFOComp::setAlgIndexParameter(int newValue)
         param->setValueNotifyingHost(newValue/31.0);  // we have to divide by 31 because setValueNotifyingHost takes a normalized value
     }
 }
+
