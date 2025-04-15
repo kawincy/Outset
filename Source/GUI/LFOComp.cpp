@@ -25,6 +25,14 @@ LFOComp::LFOComp()
             addAndMakeVisible(grid[r][c]);
         }
     }
+    rows = 4;
+    cols = 6;
+    box_width = 30;
+    box_height = 20;
+
+    spacing_x = 15;  // Space between columns
+    spacing_y = 20;  // Space between rows
+
 }
 
 LFOComp::~LFOComp()
@@ -51,25 +59,21 @@ void LFOComp::resized()
     // This method is where you should set the bounds of any child
     // components that your component contains..
 
+    // algo_ind would choose the thing here
+    a1_bounds();
+}
+
+void LFOComp::a1_bounds() {
     juce::Rectangle<int> bounds = getLocalBounds();
     auto select_width = bounds.getWidth() / 4;
-    auto select_area = bounds.removeFromLeft(select_width);
-
-    int rows = 4, cols = 6;
-    int box_width = 30;
-    int box_height = 20;
-
-    int spacing_x = 15;  // Space between columns
-    int spacing_y = 20;  // Space between rows
-
-    int total_grid_width = cols * (box_width + spacing_x) - spacing_x;   // Account for spacing
-    int total_grid_height = rows * (box_height + spacing_y) - spacing_y; // Account for spacing
-
+    juce::Rectangle<int> select_bounds = bounds.removeFromLeft(select_width);
     juce::Rectangle<int> algo_bounds = bounds.reduced(10);
-    // Center the grid inside algo_bounds
+
+    int total_grid_width = cols * (box_width + spacing_x) - spacing_x;   
+    int total_grid_height = rows * (box_height + spacing_y) - spacing_y;
+
     int startX = algo_bounds.getX() + (algo_bounds.getWidth() - total_grid_width) / 2;
     int startY = algo_bounds.getY() + (algo_bounds.getHeight() - total_grid_height) / 2;
-
     for (int r = 0; r < rows; r++)
     {
         for (int c = 0; c < cols; c++)
@@ -82,5 +86,4 @@ void LFOComp::resized()
             curr.setBounds(x, y, box_width, box_height);  // Set fixed bounds
         }
     }
-
 }
