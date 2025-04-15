@@ -70,9 +70,21 @@ struct Voice {
         for (int i = 0; i < 6; i++)
             op[i].noteOff();
     }
+    bool isActive() {
+        int sum = 0;
+        for (int i = 0; i < 6; i++) {
+            if (op[i].isCarrier())
+                sum += op[i].env.isActive();
+        }
+        if (sum > 0) {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
     int note;
 //    int velocity;
     std::vector<Operator> op;
-    Oscillator osc;
-    juce::ADSR env;
 };
