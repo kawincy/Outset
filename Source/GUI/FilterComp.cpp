@@ -10,26 +10,20 @@
 
 #include <JuceHeader.h>
 #include "FilterComp.h"
+#include "Colors.h"
 
 FilterComp::FilterComp(juce::AudioProcessorValueTreeState& apvtsRef) : apvtsRef(apvtsRef),
 cutoffAttachment(apvtsRef, "CUTOFF", cutoffSlider),
 resonanceAttachment(apvtsRef, "RESONANCE", resonanceSlider)
 {
-
-
-    juce::Label* label = nullptr;
-
-    // Copied from EnvComp.cpp
-    juce::Colour mainBlue(0x91, 0xC9, 0xB5);
-    juce::Colour accentBlue(0x5B, 0x8F, 0x7E);
     for (auto* slider : { &cutoffSlider, &resonanceSlider })
     {
         slider->setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
         slider->setTextBoxStyle(juce::Slider::NoTextBox, false, 50, 10);
 
-        slider->setColour(juce::Slider::rotarySliderFillColourId, mainBlue);
-        slider->setColour(juce::Slider::rotarySliderOutlineColourId, accentBlue);
-        slider->setColour(juce::Slider::thumbColourId, juce::Colours::white);
+        slider->setColour(juce::Slider::rotarySliderFillColourId, colors().main);
+        slider->setColour(juce::Slider::rotarySliderOutlineColourId, colors().accent);
+        slider->setColour(juce::Slider::thumbColourId, colors().white);
         slider->addListener(this);
     }
 
@@ -49,8 +43,8 @@ resonanceAttachment(apvtsRef, "RESONANCE", resonanceSlider)
     qLabel.setText("Q", juce::dontSendNotification);
     for (auto* label : { &freqLabel, &qLabel }) {
         label->setJustificationType(juce::Justification::centredLeft);
-        label->setFont(juce::Font(14.0f, juce::Font::bold));
-        label->setColour(juce::Label::textColourId, juce::Colour(0x91, 0xC9, 0xB5));
+        label->setFont(juce::Font(juce::FontOptions(14.0f, juce::Font::bold)));
+        label->setColour(juce::Label::textColourId, colors().main);
 
     }
     addAndMakeVisible(freqLabel);
@@ -62,8 +56,8 @@ resonanceAttachment(apvtsRef, "RESONANCE", resonanceSlider)
         textbox->setReturnKeyStartsNewLine(false);
         textbox->setText(juce::String(cutoffSlider.getValue()), false);
         textbox->setJustification(juce::Justification::centredTop);
-        textbox->applyFontToAllText(juce::Font(12.0f, juce::Font::plain));
-        textbox->applyColourToAllText(juce::Colour(0x91, 0xC9, 0xB5));
+        textbox->applyFontToAllText(juce::Font(juce::FontOptions(12.0f, juce::Font::plain)));
+        textbox->applyColourToAllText(colors().main);
     }
 
     // Cutoff text box setup
@@ -97,17 +91,14 @@ FilterComp::~FilterComp()
 
 void FilterComp::paint(juce::Graphics& g)
 {
-    // ===== Copied code from EnvComp.cpp ======
-    // Fill background
-    g.fillAll(juce::Colour(0x1A, 0x1A, 0x1A));
+    g.fillAll(colors().bg);
 
-    g.setColour(juce::Colour(0x5B, 0x8F, 0x7E));
+    g.setColour(colors().accent);
     g.drawRect(getLocalBounds(), 1);
     // Define drawing area for the frequency response (with margin)
     //auto drawArea = getLocalBounds().reduced(10);
 
     auto bounds = getLocalBounds().reduced(14); // padding
-    auto width = bounds.getWidth();
     auto height = bounds.getHeight() * 0.7;
     auto drawArea = bounds.withHeight(height);
 
@@ -126,7 +117,7 @@ void FilterComp::paint(juce::Graphics& g)
     // -=======================================-
 
     // Draw horizontal grid lines (for reference)
-    g.setColour(juce::Colours::grey);
+    g.setColour(colors().gridlines);
     bool debug = false;
     if(debug)
     {
@@ -241,7 +232,7 @@ void FilterComp::paint(juce::Graphics& g)
     }
 
     // Draw the frequency response curve in yellow
-    g.setColour(juce::Colour(0x91, 0xC9, 0xB5));
+    g.setColour(colors().main);
     g.strokePath(responseCurve, juce::PathStrokeType(2.0f));
 
     juce::Path fillPath = responseCurve;
@@ -249,9 +240,9 @@ void FilterComp::paint(juce::Graphics& g)
     fillPath.lineTo(drawArea.getX(), drawArea.getBottom());
     fillPath.closeSubPath();
     g.setGradientFill(juce::ColourGradient(
-        juce::Colour(0x91, 0xC9, 0xB5).withAlpha(0.15f),
+        colors().main.withAlpha(0.15f),
         drawArea.getX(), drawArea.getY(),
-        juce::Colour(0x91, 0xC9, 0xB5).withAlpha(0.05f),
+        colors().main.withAlpha(0.05f),
         drawArea.getX(), drawArea.getBottom(),
         false));
     g.fillPath(fillPath);

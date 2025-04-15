@@ -11,7 +11,7 @@
 
 //==============================================================================
 OutsetAudioProcessorEditor::OutsetAudioProcessorEditor (OutsetAudioProcessor& p, juce::MidiKeyboardState& ks )
-    : AudioProcessorEditor (&p), audioProcessor (p), keyboard_comp(ks), osc_env_tab(audioProcessor.apvts), filter_comp(audioProcessor.apvts), lfo_comp(audioProcessor.apvts)
+: AudioProcessorEditor (&p), audioProcessor (p), filter_comp(audioProcessor.apvts), keyboard_comp(ks), lfo_comp(audioProcessor.apvts), osc_env_tab(audioProcessor.apvts)
 {
     double ratio = 4.0 / 3.0;
     setResizeLimits(400, 400 / ratio, 1200, 1200 / ratio);
@@ -34,7 +34,7 @@ OutsetAudioProcessorEditor::~OutsetAudioProcessorEditor()
 void OutsetAudioProcessorEditor::paint (juce::Graphics& g)
 {
     // Probably will get rid of this because it'll get covered by the components
-    g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
+    // g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
 
     //g.setColour (juce::Colours::white);
     //g.setFont (15.0f);

@@ -9,8 +9,10 @@
 */
 
 #include <JuceHeader.h>
+
+#include "Colors.h"
 #include "LFOComp.h"
-//==============================================================================
+
 LFOComp::LFOComp(juce::AudioProcessorValueTreeState& apvtsRef) : apvtsRef(apvtsRef)
 {
     // In your constructor, you should add any child components, and
@@ -24,7 +26,7 @@ LFOComp::LFOComp(juce::AudioProcessorValueTreeState& apvtsRef) : apvtsRef(apvtsR
 
     auto drawable = std::make_unique<juce::DrawablePath>();
     drawable->setPath(next_trianglePath);
-    drawable->setFill(juce::Colours::white);
+    drawable->setFill(colors().white);
 
     next_b = std::make_unique<juce::DrawableButton>("next", juce::DrawableButton::ImageFitted);
     next_b->setImages(drawable.get());
@@ -99,23 +101,22 @@ LFOComp::~LFOComp()
 void LFOComp::paint (juce::Graphics& g)
 {
     juce::Rectangle<int> bounds = getLocalBounds();
-    g.fillAll(juce::Colours::skyblue);
+    g.fillAll(colors().bg);
 
-    g.setColour(juce::Colours::black);
+    g.setColour(colors().accent);
     g.drawRect(bounds, 1);
 
-    g.setColour(juce::Colours::black);
+    g.setColour(colors().black);
     g.setFont(juce::FontOptions(14.0f));
 
     int x = (bounds.getWidth() / 2) - bounds.getHeight() / 3;
     int y = bounds.getHeight() - bounds.getHeight() / 8;
     juce::Rectangle<int> centeredRect(bounds.getWidth()/8, 0, bounds.getWidth() * 3/ 4, bounds.getHeight() * 7 / 8);
 
-
-    g.setColour(juce::Colours::lightgrey);
+    g.setColour(colors().gridlines);
     g.fillRect(centeredRect);
 
-    g.setColour(juce::Colours::black);
+    g.setColour(colors().main);
     g.drawRect(centeredRect, 2);
 
     image = images[static_cast<int>(apvtsRef.getRawParameterValue("ALG_INDEX")->load())];

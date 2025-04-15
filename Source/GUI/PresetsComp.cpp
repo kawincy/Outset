@@ -9,6 +9,8 @@
 */
 
 #include <JuceHeader.h>
+
+#include "Colors.h"
 #include "PresetsComp.h"
 
 //==============================================================================
@@ -25,18 +27,13 @@ PresetsComp::~PresetsComp()
 
 void PresetsComp::paint (juce::Graphics& g)
 {
-    g.fillAll(juce::Colours::lightgrey);
+    g.fillAll(colors().bg);
 
-    g.setColour (juce::Colours::black);
-    g.drawRect (getLocalBounds(), 1);
-
-    g.setColour (juce::Colours::black);
-    g.setFont (juce::FontOptions (14.0f));
-    g.drawText ("Presets", getLocalBounds(), juce::Justification::centred, true);
+    g.setColour(colors().main);
+    g.setFont(juce::FontOptions(14.0f));
+    g.drawText("Presets", getLocalBounds(), juce::Justification::centred, true);
 }
 
 void PresetsComp::resized()
 {
-    
-
 }

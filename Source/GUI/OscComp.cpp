@@ -7,8 +7,10 @@
 
   ==============================================================================
 */
-#include "OscComp.h"
 #include <string>
+
+#include "Colors.h"
+#include "OscComp.h"
 
 OscComp::OscComp(int num, juce::AudioProcessorValueTreeState& apvtsRef)
     : oscNum(num),
@@ -23,37 +25,27 @@ OscComp::OscComp(int num, juce::AudioProcessorValueTreeState& apvtsRef)
     initializeSlider(oscFineSlider, oscFineLabel, "Fine", juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag, 0.0, 100.0, 1.0, 0.0);
     initializeSlider(oscCoarseSlider, oscCoarseLabel, "Coarse", juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag, 1.0, 12.0, 1.0, 1.0);
     
-    // again kinda spamming the same colors everywhere, we can do a pr to pull it out
-    juce::Colour mainBlue(0x91, 0xC9, 0xB5);
-    juce::Colour accentBlue(0x5B, 0x8F, 0x7E);
-    
     for (auto* slider : {&oscLevelSlider, &oscFineSlider, &oscCoarseSlider})
     {
-        slider->setColour(juce::Slider::rotarySliderFillColourId, mainBlue);
-        slider->setColour(juce::Slider::rotarySliderOutlineColourId, accentBlue);
-        slider->setColour(juce::Slider::thumbColourId, juce::Colours::white);
+        slider->setColour(juce::Slider::rotarySliderFillColourId, colors().main);
+        slider->setColour(juce::Slider::rotarySliderOutlineColourId, colors().accent);
+        slider->setColour(juce::Slider::thumbColourId, colors().white);
     }
     
-    // TODO: juce funt deprecated
     for (auto* label : {&oscLevelLabel, &oscFineLabel, &oscCoarseLabel})
     {
-        label->setFont(juce::Font(14.0f, juce::Font::bold));
-        label->setColour(juce::Label::textColourId, mainBlue);
+        label->setFont(juce::Font(juce::FontOptions(14.0f, juce::Font::bold)));
+        label->setColour(juce::Label::textColourId, colors().main);
         label->setJustificationType(juce::Justification::centred);
     }
 }
 
 void OscComp::paint(juce::Graphics& g)
 {
-    // TODO: de-dupe colors
-    juce::Colour mainBlue(0x91, 0xC9, 0xB5);
-    juce::Colour accentBlue(0x5B, 0x8F, 0x7E);
-    juce::Colour backgroundColour(0x1A, 0x1A, 0x1A);
+    g.fillAll(colors().bg);
     
-    // bg and border
-    g.fillAll(backgroundColour);
-    g.setColour(accentBlue);
-    g.drawRect(getLocalBounds(), 1);
+    g.setColour(colors().accent);
+    // g.drawRect(getLocalBounds(), 1);
     
     // DRAW OSC
     auto bounds = getLocalBounds().reduced(14); // padding
@@ -80,7 +72,7 @@ void OscComp::paint(juce::Graphics& g)
         wavePath.lineTo(graphBounds.getX() + x, y);
     }
     
-    g.setColour(mainBlue);
+    g.setColour(colors().main);
     g.strokePath(wavePath, juce::PathStrokeType(2.0f));
     
     // classic gradient
@@ -89,15 +81,15 @@ void OscComp::paint(juce::Graphics& g)
     fillPath.lineTo(graphBounds.getX(), centerY);
     fillPath.closeSubPath();
     g.setGradientFill(juce::ColourGradient(
-        mainBlue.withAlpha(0.15f),
+        colors().main.withAlpha(0.15f),
         graphBounds.getX(), graphBounds.getY(),
-        mainBlue.withAlpha(0.05f),
+        colors().main.withAlpha(0.05f),
         graphBounds.getX(), graphBounds.getBottom(),
         false));
     g.fillPath(fillPath);
     
     // grid lines
-    g.setColour(juce::Colours::white.withAlpha(0.2f));
+    g.setColour(colors().gridlines);
     for (int i = 1; i < 5; ++i)
     {
         float xPos = graphBounds.getX() + (graphBounds.getWidth() * i) / 5.0f;
@@ -109,8 +101,8 @@ void OscComp::paint(juce::Graphics& g)
     g.drawLine(graphBounds.getX(), centerLine, graphBounds.getRight(), centerLine, 1.0f);
     
     // vals on sliders same as ENV
-    g.setColour(mainBlue);
-    g.setFont(juce::Font(12.0f));
+    g.setColour(colors().main);
+    g.setFont(juce::Font(juce::FontOptions(12.0f)));
     // lambda for printing the vals
     auto valueStr = [](float value) { return juce::String(value, 2); };
     g.drawText(valueStr(oscLevelSlider.getValue()),
@@ -171,5 +163,3 @@ void OscComp::sliderValueChanged(juce::Slider* slider)
 {
     repaint();
 }
-
-// I liberally removed some things here bc i didnt use them lmk if they are needed
