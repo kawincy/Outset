@@ -23,6 +23,7 @@ OutsetAudioProcessor::OutsetAudioProcessor()
 #endif
 {
     filter = std::make_unique<Filters>();
+    scope = std::make_unique<Scope>();
 }
 
 OutsetAudioProcessor::~OutsetAudioProcessor()
@@ -164,25 +165,56 @@ void OutsetAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce:
     
     //our code (non-template stuff) starts here
   
+    double cutoff = apvts.getRawParameterValue("CUTOFF")->load();
+	double q = apvts.getRawParameterValue("RESONANCE")->load();
+    double attack1 = apvts.getRawParameterValue("ATTACK_1")->load();
+	double decay1 = apvts.getRawParameterValue("DECAY_1")->load();
+	double sustain1 = apvts.getRawParameterValue("SUSTAIN_1")->load();
+	double release1 = apvts.getRawParameterValue("RELEASE_1")->load();
+    double fine1 = apvts.getRawParameterValue("FINE_1")->load();
+
+    const int numOperators = 6;
+
+	std::vector<float> level(numOperators);
+	std::vector<float> fine(numOperators);
+	std::vector<float> coarse(numOperators);
+    std::vector<double> attack(numOperators);
+	std::vector<double> decay(numOperators);
+	std::vector<double> sustain(numOperators);
+	std::vector<double> release(numOperators);
+
+    for (int i = 0; i < numOperators; ++i) {
+		level[i] = apvts.getRawParameterValue("LEVEL_" + juce::String(i + 1))->load();
+		fine[i] = apvts.getRawParameterValue("FINE_" + juce::String(i + 1))->load();
+		coarse[i] = apvts.getRawParameterValue("COARSE_" + juce::String(i + 1))->load();
+		attack[i] = apvts.getRawParameterValue("ATTACK_" + juce::String(i + 1))->load();
+		decay[i] = apvts.getRawParameterValue("DECAY_" + juce::String(i + 1))->load();
+		sustain[i] = apvts.getRawParameterValue("SUSTAIN_" + juce::String(i + 1))->load();
+		release[i] = apvts.getRawParameterValue("RELEASE_" + juce::String(i + 1))->load();
+    }
+
+
+    //DBG(cutoff);
+    //DBG(attack3);
+    //DBG(fine1);
     
-    
-	filter->setCutoffFrequency(1000.0f);
-	filter->setResonance(0.7f);
+	filter->setCutoffFrequency(cutoff);
+	filter->setResonance(q);
+	for (int i = 0; i < 6; i++) {
+        // tbd:
+		//synth.updateFine(fine[i], i);
+		synth.updateOsc(fine[i], coarse[i], level[i], i);
+		synth.updateADSR(attack[i], decay[i], sustain[i], release[i], i);
+	}
     keyboardState.processNextMidiBuffer(midiMessages, 0, buffer.getNumSamples(), true);
     splitBufferByEvents(buffer, midiMessages);
     filter->processBlock(buffer);
     
+	scope->setAudioData(buffer);
     
     
     //uncomment these to check that parameters and sliders are linked
-//    double cutoff = apvts.getRawParameterValue("CUTOFF")->load();
-//    double attack3 = apvts.getRawParameterValue("ATTACK_3")->load();
-//    double fine1 = apvts.getRawParameterValue("FINE_1")->load();
-//    
-//    
-//    DBG(cutoff);
-//    DBG(attack3);
-//    DBG(fine1);
+
 
 }
 

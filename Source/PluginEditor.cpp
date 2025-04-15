@@ -28,6 +28,7 @@ OutsetAudioProcessorEditor::OutsetAudioProcessorEditor (OutsetAudioProcessor& p,
 
 OutsetAudioProcessorEditor::~OutsetAudioProcessorEditor()
 {
+    stopTimer();
 }
 
 //==============================================================================

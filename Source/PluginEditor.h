@@ -17,11 +17,11 @@
 #include "GUI/LFOComp.h"
 #include "GUI/OscComp.h"
 #include "GUI/OscEnvTab.h"
-
+#include "GUI/Scope.h"
 //==============================================================================
 /**
 */
-class OutsetAudioProcessorEditor  : public juce::AudioProcessorEditor
+class OutsetAudioProcessorEditor  : public juce::AudioProcessorEditor, private juce::Timer
 {
 public:
     OutsetAudioProcessorEditor (OutsetAudioProcessor&, juce::MidiKeyboardState& ks /*this gets passed to keyboard_comp*/);
@@ -43,5 +43,9 @@ private:
     //OscComp osc_comp;
 	OscEnvTab osc_env_tab;
 
+    void timerCallback() override
+    {
+        //scopeComponent.setAudioData(audioProcessor.getAudioBuffer());
+    }
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (OutsetAudioProcessorEditor)
 };
