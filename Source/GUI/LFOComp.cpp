@@ -78,6 +78,10 @@ LFOComp::LFOComp(juce::AudioProcessorValueTreeState& apvtsRef) : apvtsRef(apvtsR
     spacing_x = 15;  // Space between columns
     spacing_y = 20;  // Space between rows
 
+    juce::Path next_trianglePath, prev_trianglePath;
+    next_trianglePath.addTriangle(0, 0, 30, 15, 0, 30);
+    prev_trianglePath.addTriangle(30, 0, 0, 15, 30, 30);
+
     auto drawable = std::make_unique<juce::DrawablePath>();
     drawable->setPath(next_trianglePath);
     drawable->setFill(colors().white);
