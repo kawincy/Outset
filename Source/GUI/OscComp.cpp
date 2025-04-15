@@ -162,7 +162,7 @@ void OscComp::initializeSlider(juce::Slider& slider, juce::Label& label, const j
     addAndMakeVisible(slider);
     slider.setSliderStyle(style);
     slider.setTextBoxStyle(juce::Slider::NoTextBox, false, 50, 20);
-    slider.setRange(min, max, interval);
+    //slider.setRange(min, max, interval);
     slider.setValue(initialValue);
     slider.addListener(this);
     slider.setDoubleClickReturnValue(true, initialValue);
@@ -175,7 +175,7 @@ void OscComp::initializeSlider(juce::Slider& slider, juce::Label& label, const j
     addAndMakeVisible(slider);
     slider.setSliderStyle(style);
     slider.setTextBoxStyle(juce::Slider::NoTextBox, false, 50, 20);
-    slider.setRange(min, max, interval);
+    //slider.setRange(min, max, interval);
     slider.setValue(initialValue);
     slider.addListener(this);
     slider.setDoubleClickReturnValue(true, initialValue);

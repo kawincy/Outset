@@ -333,21 +333,33 @@ juce::AudioProcessorValueTreeState::ParameterLayout OutsetAudioProcessor::create
             1.0f));
     }
 	// Ratio Parameters (6)
+    auto skewMidPoint = 1.0f; // Set your desired midpoint value here
+
     juce::NormalisableRange<float> ratioRange = juce::NormalisableRange<float>(
-        1.0f, 12.0f,
-        [](float start, float end, float normalised)
+        0.01f, 9.f,
+        [skewMidPoint](float start, float end, float normalised)
         {
-            // Converts normalised value [0,1] back to the desired stepped range.
-            float value = juce::jmap(normalised, start, end);
-            if (value < 2.0f)
-                return std::round(value * 100.0f) / 100.0f;  // fine granularity (0.01 step) from 1 to 2
-            else
-                return std::round(value);                    // integer steps from 2 upwards
+            // Apply skew first
+            float skewedNormalised = normalised < 0.5f
+                ? juce::jmap(normalised, 0.0f, 0.5f, 0.0f, skewMidPoint / (end - start))
+                : juce::jmap(normalised, 0.5f, 1.0f, skewMidPoint / (end - start), 1.0f);
+
+            float value = juce::jmap(skewedNormalised, start, end);
+
+            // Apply granular increments below 2, integer increments above
+            return (value < 2.0f) ? std::round(value * 100.0f) / 100.0f : std::round(value);
         },
-        [](float start, float end, float value)
+        // Value-to-normalised lambda (with inverse skew)
+        [skewMidPoint](float start, float end, float value)
         {
-            // Converts back to normalised value from your stepped value.
-            return juce::jmap(value, start, end, 0.0f, 1.0f);
+            float proportion = (value - start) / (end - start);
+            float skewProportion = skewMidPoint / (end - start);
+
+            float normalised = proportion < skewProportion
+                ? juce::jmap(proportion, 0.0f, skewProportion, 0.0f, 0.5f)
+                : juce::jmap(proportion, skewProportion, 1.0f, 0.5f, 1.0f);
+
+            return juce::jlimit(0.0f, 1.0f, normalised);
         },
         nullptr);
 
@@ -356,7 +368,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout OutsetAudioProcessor::create
         layout.add(std::make_unique<juce::AudioParameterFloat>(
             juce::ParameterID("RATIO_" + juce::String(i), 1),
             "Ratio" + juce::String(i),
-            coarseRange,
+            ratioRange,
             1.0f));
     }
     // Cutoff Parameter (1)
