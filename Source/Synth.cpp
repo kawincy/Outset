@@ -68,7 +68,7 @@ void Synth::noteOff(int note)
     DBG("NOTE OFF " << note);
 }
 
-void Synth::updateOsc(float fine, float coarse, float level, int index)
+void Synth::updateOsc(float fine, float coarse, float level, float ratio, int index)
 {
     // In a polyphonic setting, apply oscillator adjustments
     // to the operator with the specified index for all voices.
@@ -79,7 +79,8 @@ void Synth::updateOsc(float fine, float coarse, float level, int index)
     {
         // Adjust the operator parameters in each voice.
         // (It is assumed that each Voice contains an array of operators called op.)
-        voice.op[index].updateRatio(coarse);
+		voice.op[index].updateTuning(fine, coarse);
+        voice.op[index].updateRatio(ratio);
         voice.op[index].updateLevel(level);
     }
 }

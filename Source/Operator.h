@@ -33,6 +33,7 @@ public:
 	void updateEnvParams(float attack, float decay, float sustain, float release);
 	void updateRatio(float ratio_);
 	void updateLevel(float level_);
+	void updateTuning(float fine, float coarse);
 	float getCachedSample();
 	bool isCarrier() { return carrier; }
 	void setCarrier(bool isCarrier) { carrier = isCarrier; }
@@ -48,7 +49,7 @@ private:
 	float lastSample = 0.f;
 	float cachedSample;
 	int opIndex;
-	float sampleRate, frequency, level, ratio;
+	float sampleRate, frequency, level, ratio, tuning;
 	std::vector<Operator*> modOperators;
 	juce::SmoothedValue<float, juce::ValueSmoothingTypes::Multiplicative> freqSmooth; //multiplicative for frequency per juce docs
 	juce::SmoothedValue<float> ampSmooth;

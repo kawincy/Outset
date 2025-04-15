@@ -178,6 +178,7 @@ void OutsetAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce:
 	std::vector<float> level(numOperators);
 	std::vector<float> fine(numOperators);
 	std::vector<float> coarse(numOperators);
+	std::vector<float> ratio(numOperators);
     std::vector<double> attack(numOperators);
 	std::vector<double> decay(numOperators);
 	std::vector<double> sustain(numOperators);
@@ -187,6 +188,7 @@ void OutsetAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce:
 		level[i] = apvts.getRawParameterValue("LEVEL_" + juce::String(i + 1))->load();
 		fine[i] = apvts.getRawParameterValue("FINE_" + juce::String(i + 1))->load();
 		coarse[i] = apvts.getRawParameterValue("COARSE_" + juce::String(i + 1))->load();
+		ratio[i] = apvts.getRawParameterValue("RATIO_" + juce::String(i + 1))->load();
 		attack[i] = apvts.getRawParameterValue("ATTACK_" + juce::String(i + 1))->load();
 		decay[i] = apvts.getRawParameterValue("DECAY_" + juce::String(i + 1))->load();
 		sustain[i] = apvts.getRawParameterValue("SUSTAIN_" + juce::String(i + 1))->load();
@@ -201,9 +203,8 @@ void OutsetAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce:
 	filter->setCutoffFrequency(cutoff);
 	filter->setResonance(q);
 	for (int i = 0; i < 6; i++) {
-        // tbd:
-		//synth.updateFine(fine[i], i);
-		synth.updateOsc(fine[i], coarse[i], level[i], i);
+
+		synth.updateOsc(fine[i], coarse[i], level[i], ratio[i], i);
 		synth.updateADSR(attack[i], decay[i], sustain[i], release[i], i);
 	}
     keyboardState.processNextMidiBuffer(midiMessages, 0, buffer.getNumSamples(), true);

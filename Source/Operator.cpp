@@ -27,6 +27,7 @@ Operator::Operator(int index)
 	osc.amplitude = 0.5f;
 	ratio = 1.f;
 	frequency = 261.63f;
+	tuning = 0;
 	setFrequency(261.63f);
 }
 
@@ -41,7 +42,6 @@ void Operator::init(int opIndex_) // deprecated
 	env.setParameters({ 0.1f, 0.1f, 0.8f, 0.1f });
 	freqSmooth.reset(int(50));
 	ampSmooth.reset(int(50));
-
 }
 
 void Operator::reset(float fs) {
@@ -131,10 +131,14 @@ void Operator::updateLevel(float level_)
 {
 	level = level_;
 }
+void Operator::updateTuning(float fine, float coarse)
+{
+	tuning = coarse + fine / 100.0f;
+}
 
 void Operator::noteOn(int note, int velocity)
 {
-	float freq = ratio * 440.0f * std::exp2(float(note - 69) / 12.0f); //this is the midi to freq formula
+	float freq = ratio * 440.0f * std::exp2(float(note - 69 + tuning) / 12.0f); //this is the midi to freq formula
 	DBG("Operator " << opIndex << " initial freq: " << freq);
 	//setFrequency(freq);
 	frequency = freq;
