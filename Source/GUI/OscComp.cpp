@@ -41,8 +41,6 @@ OscComp::OscComp(int num, juce::AudioProcessorValueTreeState& apvtsRef)
         label->setColour(juce::Label::textColourId, colors().main);
         label->setJustificationType(juce::Justification::centred);
     }
-    oscFineSlider.setNumDecimalPlacesToDisplay(0);
-    oscCoarseSlider.setNumDecimalPlacesToDisplay(0);
 }
 
 void OscComp::paint(juce::Graphics& g)
@@ -109,19 +107,27 @@ void OscComp::paint(juce::Graphics& g)
     g.setColour(colors().main);
     g.setFont(juce::Font(juce::FontOptions(12.0f)));
     // lambda for printing the vals
-    auto valueStr = [](float value) { return juce::String(value, 2); };
-    g.drawText(valueStr(oscLevelSlider.getValue()),
-              oscLevelSlider.getBounds().translated(0, -15),
+    auto floatValueStr = [](float value) { return juce::String(value, 2); };
+    auto intValueStr = [](int value) { return juce::String(value); };
+	int valYOffset = oscLevelSlider.getBounds().getWidth() / -2;
+    g.drawText(floatValueStr(oscLevelSlider.getValue()),
+              oscLevelSlider.getBounds().translated(0, valYOffset),
               juce::Justification::centred);
-    g.drawText(valueStr(oscFineSlider.getValue()),
-              oscFineSlider.getBounds().translated(0, -15),
+    g.drawText(intValueStr(int(oscFineSlider.getValue())),
+              oscFineSlider.getBounds().translated(0, valYOffset),
               juce::Justification::centred);
-    g.drawText(valueStr(oscCoarseSlider.getValue()),
-              oscCoarseSlider.getBounds().translated(0, -15),
+    g.drawText(intValueStr(int(oscCoarseSlider.getValue())),
+              oscCoarseSlider.getBounds().translated(0, valYOffset),
               juce::Justification::centred);
-    g.drawText(valueStr(oscRatioSlider.getValue()),
-              oscRatioSlider.getBounds().translated(0, -15),
+    auto ratioVal = oscRatioSlider.getValue();
+    if (ratioVal >= 2.0f)
+        g.drawText(intValueStr(ratioVal),
+              oscRatioSlider.getBounds().translated(0, valYOffset),
               juce::Justification::centred);
+    else
+        g.drawText(floatValueStr(ratioVal),
+            oscRatioSlider.getBounds().translated(0, valYOffset),
+            juce::Justification::centred);
 }
 
 void OscComp::resized()
@@ -136,7 +142,7 @@ void OscComp::resized()
     auto sliderArea = bounds;
     auto sliderWidth = sliderArea.getWidth() / 4;
     
-    auto knobSize = juce::jmin(sliderWidth * 0.6f, 35.0f);
+    auto knobSize = juce::jmin(sliderWidth * 0.6f, 45.f);
     
     // align
     auto levelArea = sliderArea.removeFromLeft(sliderWidth);
@@ -150,11 +156,30 @@ void OscComp::resized()
     oscRatioSlider.setBounds(ratioArea.withSizeKeepingCentre(knobSize, knobSize));
     
     // labels below sliders
-    oscLevelLabel.setBounds(oscLevelSlider.getBounds().withHeight(20).translated(0, knobSize/2 + 5));
-    oscFineLabel.setBounds(oscFineSlider.getBounds().withHeight(20).translated(0, knobSize/2 + 5));
-    oscCoarseLabel.setBounds(oscCoarseSlider.getBounds().withHeight(20).translated(0, knobSize/2 + 5));
-    oscRatioLabel.setBounds(oscRatioSlider.getBounds().withHeight(20).translated(0, knobSize / 2 + 5));
+    // labels below sliders
+    const int labelHeight = 20;
+    const int labelYOffset = knobSize / 2 - knobSize / 5;
+    const int labelExtraWidth = 20; // ensure extra width
 
+    oscLevelLabel.setBounds(oscLevelSlider.getX() - labelExtraWidth / 2,
+        oscLevelSlider.getBottom() - labelYOffset,
+        oscLevelSlider.getWidth() + labelExtraWidth,
+        labelHeight);
+
+    oscFineLabel.setBounds(oscFineSlider.getX() - labelExtraWidth / 2,
+        oscFineSlider.getBottom() - labelYOffset,
+        oscFineSlider.getWidth() + labelExtraWidth,
+        labelHeight);
+
+    oscCoarseLabel.setBounds(oscCoarseSlider.getX() - labelExtraWidth / 2,
+        oscCoarseSlider.getBottom() - labelYOffset,
+        oscCoarseSlider.getWidth() + labelExtraWidth,
+        labelHeight);
+
+    oscRatioLabel.setBounds(oscRatioSlider.getX() - labelExtraWidth / 2,
+        oscRatioSlider.getBottom() - labelYOffset,
+        oscRatioSlider.getWidth() + labelExtraWidth,
+        labelHeight);
 }
 
 void OscComp::initializeSlider(juce::Slider& slider, juce::Label& label, const juce::String& name, juce::Slider::SliderStyle style, double initialValue)

@@ -125,6 +125,8 @@ float Operator::getNextSample()
 void Operator::updateRatio(float ratio_)
 {
 	ratio = ratio_;
+	float freq = ratio * 440.0f * std::exp2(float(note - 69 + tuning) / 12.0f); // this is the midi to freq formula
+	frequency = freq;
 }
 
 void Operator::updateLevel(float level_)
@@ -134,11 +136,14 @@ void Operator::updateLevel(float level_)
 void Operator::updateTuning(float fine, float coarse)
 {
 	tuning = coarse + fine / 100.0f;
+	float freq = ratio * 440.0f * std::exp2(float(note - 69 + tuning) / 12.0f); // this is the midi to freq formula
+	frequency = freq;
 }
 
-void Operator::noteOn(int note, int velocity)
+void Operator::noteOn(int note_, int velocity)
 {
-	float freq = ratio * 440.0f * std::exp2(float(note - 69 + tuning) / 12.0f); //this is the midi to freq formula
+	note = note_;
+	float freq = ratio * 440.0f * std::exp2(float(note - 69 + tuning) / 12.0f); // this is the midi to freq formula
 	DBG("Operator " << opIndex << " initial freq: " << freq);
 	//setFrequency(freq);
 	frequency = freq;
