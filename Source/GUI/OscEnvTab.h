@@ -31,6 +31,7 @@ public:
         addTab("Osc 5", colors().main, new OscEnvParent(5, apvtsRef), true);
         addTab("Osc 6", colors().main, new OscEnvParent(6, apvtsRef), true);
     }
+
     virtual void OscEnvTab::currentTabChanged(int newCurrentTabIndex, const juce::String& newCurrentTabName) override
     {
 		setTabBackgroundColour(currentTabIndex, colors().main);

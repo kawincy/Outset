@@ -24,8 +24,8 @@ OscComp::OscComp(int num, juce::AudioProcessorValueTreeState& apvtsRef)
 	
     // setup the sliders
     initializeSlider(oscLevelSlider, oscLevelLabel, "Level", juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag, 0.0, 1.0, 0.01, 0.5);
-    initializeSlider(oscFineSlider, oscFineLabel, "Fine", juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag, 0.0, 100.0, 1.0, 0.0);
-    initializeSlider(oscCoarseSlider, oscCoarseLabel, "Coarse", juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag, 1.0, 12.0, 1.0, 1.0);
+    initializeSlider(oscFineSlider, oscFineLabel, "Fine", juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag, -100.0, 100.0, 1.0, 0.0);
+    initializeSlider(oscCoarseSlider, oscCoarseLabel, "Coarse", juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag, -12.0, 12.0, 1.0, 1.0);
     initializeSlider(oscRatioSlider, oscRatioLabel, "Ratio", juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag, 0.01, 9.0, 0.01, 1.0, 1.0);
 
     for (auto* slider : {&oscLevelSlider, &oscFineSlider, &oscCoarseSlider, &oscRatioSlider})
@@ -41,7 +41,8 @@ OscComp::OscComp(int num, juce::AudioProcessorValueTreeState& apvtsRef)
         label->setColour(juce::Label::textColourId, colors().main);
         label->setJustificationType(juce::Justification::centred);
     }
-
+    oscFineSlider.setNumDecimalPlacesToDisplay(0);
+    oscCoarseSlider.setNumDecimalPlacesToDisplay(0);
 }
 
 void OscComp::paint(juce::Graphics& g)

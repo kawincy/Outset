@@ -323,7 +323,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout OutsetAudioProcessor::create
     }
 
     // Coarse Parameters (6)
-    juce::NormalisableRange<float> coarseRange(1.0f, 12.0f, 1.0f);
+    juce::NormalisableRange<float> coarseRange(-12.0f, 12.0f, 1.0f);
     for (int i = 1; i <= 6; ++i)
     {
         layout.add(std::make_unique<juce::AudioParameterFloat>(
