@@ -96,7 +96,13 @@ public:
         }
         activeNotes.clear();
     }
-
+	void resetCaches()
+	{
+		for (auto& voice : voices)
+		{
+			voice.resetCache();
+		}
+	}
     /// Stops all currently playing voices.
     void allNotesOff()
     {

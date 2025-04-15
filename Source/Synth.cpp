@@ -50,6 +50,7 @@ void Synth::render(float** outputBuffers, int sampleCount)
         {
             outputBufferRight[sample] = output;
         }
+        voiceHandler.resetCaches();
     }
 }
 
