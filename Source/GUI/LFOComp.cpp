@@ -59,10 +59,24 @@ LFOComp::LFOComp(juce::AudioProcessorValueTreeState& apvtsRef) : apvtsRef(apvtsR
     
     setAlgIndexParameter(0);
     algo_ind = 0;
+    
+    /*addAndMakeVisible(test);
+    addAndMakeVisible(test2);
+    test2.set_carrier(false);
+    test2.set_num(2);*/
+    
+    for (int r = 0; r < 4; r++) {
+        for (int c = 0; c < 6; c++) {
+            addAndMakeVisible(grid[r][c]);
+        }
+    }
+    rows = 4;
+    cols = 6;
+    box_width = 30;
+    box_height = 20;
 
-    juce::Path next_trianglePath, prev_trianglePath;
-    next_trianglePath.addTriangle(0, 0, 30, 15, 0, 30);
-    prev_trianglePath.addTriangle(30, 0, 0, 15, 30, 30);
+    spacing_x = 15;  // Space between columns
+    spacing_y = 20;  // Space between rows
 
     auto drawable = std::make_unique<juce::DrawablePath>();
     drawable->setPath(next_trianglePath);
@@ -155,7 +169,6 @@ void LFOComp::resized()
 
     int startX = algo_bounds.getX() + (algo_bounds.getWidth() - total_grid_width) / 2;
     int startY = algo_bounds.getY() + (algo_bounds.getHeight() - total_grid_height) / 2;
-
     for (int r = 0; r < rows; r++)
     {
         for (int c = 0; c < cols; c++)
