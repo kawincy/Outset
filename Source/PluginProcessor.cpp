@@ -311,7 +311,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout OutsetAudioProcessor::create
     }
 
     // Fine Parameters (6)
-    juce::NormalisableRange<float> fineRange(0.0f, 100.0f, 1.0f);
+    juce::NormalisableRange<float> fineRange(-100.0f, 100.0f, 1.0f);
     for (int i = 1; i <= 6; ++i)
     {
         layout.add(std::make_unique<juce::AudioParameterFloat>(
@@ -331,7 +331,33 @@ juce::AudioProcessorValueTreeState::ParameterLayout OutsetAudioProcessor::create
             coarseRange,
             1.0f));
     }
+	// Ratio Parameters (6)
+    juce::NormalisableRange<float> ratioRange = juce::NormalisableRange<float>(
+        1.0f, 12.0f,
+        [](float start, float end, float normalised)
+        {
+            // Converts normalised value [0,1] back to the desired stepped range.
+            float value = juce::jmap(normalised, start, end);
+            if (value < 2.0f)
+                return std::round(value * 100.0f) / 100.0f;  // fine granularity (0.01 step) from 1 to 2
+            else
+                return std::round(value);                    // integer steps from 2 upwards
+        },
+        [](float start, float end, float value)
+        {
+            // Converts back to normalised value from your stepped value.
+            return juce::jmap(value, start, end, 0.0f, 1.0f);
+        },
+        nullptr);
 
+    for (int i = 1; i <= 6; ++i)
+    {
+        layout.add(std::make_unique<juce::AudioParameterFloat>(
+            juce::ParameterID("RATIO_" + juce::String(i), 1),
+            "Ratio" + juce::String(i),
+            coarseRange,
+            1.0f));
+    }
     // Cutoff Parameter (1)
     juce::NormalisableRange<float> cutoffRange(20.0f, 20000.0f, 1.0f);
     cutoffRange.setSkewForCentre(1000.0f);

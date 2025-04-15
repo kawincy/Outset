@@ -39,6 +39,7 @@ public:
 	bool isFeedback() { return feedback; }
 	void setFeedback(bool isFeedback) { feedback = isFeedback; }
 	Oscillator osc;
+	juce::ADSR env;
 
 private:
 	bool feedback = false; // feedback operator assignment
@@ -49,7 +50,6 @@ private:
 	int opIndex;
 	float sampleRate, frequency, level, ratio;
 	std::vector<Operator*> modOperators;
-	juce::ADSR env;
 	juce::SmoothedValue<float, juce::ValueSmoothingTypes::Multiplicative> freqSmooth; //multiplicative for frequency per juce docs
 	juce::SmoothedValue<float> ampSmooth;
 };

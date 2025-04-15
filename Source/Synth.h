@@ -13,6 +13,7 @@
 
 #include <JuceHeader.h>
 #include "Voice.h"
+#include "VoiceHandler.h"
 #include "DSP/NoiseGenerator.h"
 
 class Synth {
@@ -30,6 +31,6 @@ private:
     void noteOff(int note);
     
     float sampleRate;
-    Voice voice; //will eventually be a collection of voices. likely a vector
-    NoiseGenerator noiseGen;
+    VoiceHandler voiceHandler; //will eventually be a collection of voices. likely a vector
+    //NoiseGenerator noiseGen;
 };
