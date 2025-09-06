@@ -43,8 +43,9 @@ private:
     juce::TextEditor cutoffTextBox;
     juce::TextEditor resonanceTextBox;
 
-    // Sample rate used for computing the response curve (default: 44100 Hz)
-    float sampleRate = 44100.0f;
+    // Sample rate used for computing the response curve (default: 48000 Hz)
+    // Need to implement some sort of update for this ideally
+    float sampleRate = 48000;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(FilterComp)
 };

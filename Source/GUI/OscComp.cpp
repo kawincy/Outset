@@ -17,22 +17,25 @@ OscComp::OscComp(int num, juce::AudioProcessorValueTreeState& apvtsRef)
       apvtsRef(apvtsRef),
       levelAttachment(apvtsRef, "LEVEL_" + std::to_string(oscNum), oscLevelSlider),
       fineAttachment(apvtsRef, "FINE_" + std::to_string(oscNum), oscFineSlider),
-      coarseAttachment(apvtsRef, "COARSE_" + std::to_string(oscNum), oscCoarseSlider)
+      coarseAttachment(apvtsRef, "COARSE_" + std::to_string(oscNum), oscCoarseSlider),
+	  ratioAttachment(apvtsRef, "RATIO_" + std::to_string(oscNum), oscRatioSlider)
       
 {
+	
     // setup the sliders
-    initializeSlider(oscLevelSlider, oscLevelLabel, "Level", juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag, 0.0, 1.0, 0.01, 0.5);
-    initializeSlider(oscFineSlider, oscFineLabel, "Fine", juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag, 0.0, 100.0, 1.0, 0.0);
-    initializeSlider(oscCoarseSlider, oscCoarseLabel, "Coarse", juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag, 1.0, 12.0, 1.0, 1.0);
-    
-    for (auto* slider : {&oscLevelSlider, &oscFineSlider, &oscCoarseSlider})
+    initializeSlider(oscLevelSlider, oscLevelLabel, "Level", juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag, 0.5);
+    initializeSlider(oscFineSlider, oscFineLabel, "Fine", juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag, 0.0);
+    initializeSlider(oscCoarseSlider, oscCoarseLabel, "Coarse", juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag, 0.0);
+    initializeSlider(oscRatioSlider, oscRatioLabel, "Ratio", juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag, 1.0, 1.0);
+
+    for (auto* slider : {&oscLevelSlider, &oscFineSlider, &oscCoarseSlider, &oscRatioSlider})
     {
         slider->setColour(juce::Slider::rotarySliderFillColourId, colors().main);
         slider->setColour(juce::Slider::rotarySliderOutlineColourId, colors().accent);
         slider->setColour(juce::Slider::thumbColourId, colors().white);
     }
     
-    for (auto* label : {&oscLevelLabel, &oscFineLabel, &oscCoarseLabel})
+    for (auto* label : {&oscLevelLabel, &oscFineLabel, &oscCoarseLabel, &oscRatioLabel})
     {
         label->setFont(juce::Font(juce::FontOptions(14.0f, juce::Font::bold)));
         label->setColour(juce::Label::textColourId, colors().main);
@@ -56,7 +59,7 @@ void OscComp::paint(juce::Graphics& g)
     juce::Path wavePath;
     float amplitude = height / 2.0f * oscLevelSlider.getValue();
     float centerY = graphBounds.getCentreY();
-    float ratio = oscCoarseSlider.getValue();
+    float ratio = oscRatioSlider.getValue();
     float fineTune = oscFineSlider.getValue() / 25.0f;
     
     // The thing about fractional ratios
@@ -104,16 +107,27 @@ void OscComp::paint(juce::Graphics& g)
     g.setColour(colors().main);
     g.setFont(juce::Font(juce::FontOptions(12.0f)));
     // lambda for printing the vals
-    auto valueStr = [](float value) { return juce::String(value, 2); };
-    g.drawText(valueStr(oscLevelSlider.getValue()),
-              oscLevelSlider.getBounds().translated(0, -15),
+    auto floatValueStr = [](float value) { return juce::String(value, 2); };
+    auto intValueStr = [](int value) { return juce::String(value); };
+	int valYOffset = oscLevelSlider.getBounds().getWidth() / -2;
+    g.drawText(floatValueStr(oscLevelSlider.getValue()),
+              oscLevelSlider.getBounds().translated(0, valYOffset),
               juce::Justification::centred);
-    g.drawText(valueStr(oscFineSlider.getValue()),
-              oscFineSlider.getBounds().translated(0, -15),
+    g.drawText(intValueStr(int(oscFineSlider.getValue())),
+              oscFineSlider.getBounds().translated(0, valYOffset),
               juce::Justification::centred);
-    g.drawText(valueStr(oscCoarseSlider.getValue()),
-              oscCoarseSlider.getBounds().translated(0, -15),
+    g.drawText(intValueStr(int(oscCoarseSlider.getValue())),
+              oscCoarseSlider.getBounds().translated(0, valYOffset),
               juce::Justification::centred);
+    auto ratioVal = oscRatioSlider.getValue();
+    if (ratioVal >= 2.0f)
+        g.drawText(intValueStr(ratioVal),
+              oscRatioSlider.getBounds().translated(0, valYOffset),
+              juce::Justification::centred);
+    else
+        g.drawText(floatValueStr(ratioVal),
+            oscRatioSlider.getBounds().translated(0, valYOffset),
+            juce::Justification::centred);
 }
 
 void OscComp::resized()
@@ -126,35 +140,72 @@ void OscComp::resized()
     
     // bottom half is sliders
     auto sliderArea = bounds;
-    auto sliderWidth = sliderArea.getWidth() / 3;
+    auto sliderWidth = sliderArea.getWidth() / 4;
     
-    auto knobSize = juce::jmin(sliderWidth * 0.6f, 35.0f);
+    auto knobSize = juce::jmin(sliderWidth * 0.6f, 45.f);
     
     // align
     auto levelArea = sliderArea.removeFromLeft(sliderWidth);
     auto fineArea = sliderArea.removeFromLeft(sliderWidth);
+	auto coarseArea = sliderArea.removeFromLeft(sliderWidth);
     auto ratioArea = sliderArea;
     
     oscLevelSlider.setBounds(levelArea.withSizeKeepingCentre(knobSize, knobSize));
     oscFineSlider.setBounds(fineArea.withSizeKeepingCentre(knobSize, knobSize));
-    oscCoarseSlider.setBounds(ratioArea.withSizeKeepingCentre(knobSize, knobSize));
+    oscCoarseSlider.setBounds(coarseArea.withSizeKeepingCentre(knobSize, knobSize));
+    oscRatioSlider.setBounds(ratioArea.withSizeKeepingCentre(knobSize, knobSize));
     
     // labels below sliders
-    oscLevelLabel.setBounds(oscLevelSlider.getBounds().withHeight(20).translated(0, knobSize/2 + 5));
-    oscFineLabel.setBounds(oscFineSlider.getBounds().withHeight(20).translated(0, knobSize/2 + 5));
-    oscCoarseLabel.setBounds(oscCoarseSlider.getBounds().withHeight(20).translated(0, knobSize/2 + 5));
+    // labels below sliders
+    const int labelHeight = 20;
+    const int labelYOffset = knobSize / 2 - knobSize / 5;
+    const int labelExtraWidth = 20; // ensure extra width
+
+    oscLevelLabel.setBounds(oscLevelSlider.getX() - labelExtraWidth / 2,
+        oscLevelSlider.getBottom() - labelYOffset,
+        oscLevelSlider.getWidth() + labelExtraWidth,
+        labelHeight);
+
+    oscFineLabel.setBounds(oscFineSlider.getX() - labelExtraWidth / 2,
+        oscFineSlider.getBottom() - labelYOffset,
+        oscFineSlider.getWidth() + labelExtraWidth,
+        labelHeight);
+
+    oscCoarseLabel.setBounds(oscCoarseSlider.getX() - labelExtraWidth / 2,
+        oscCoarseSlider.getBottom() - labelYOffset,
+        oscCoarseSlider.getWidth() + labelExtraWidth,
+        labelHeight);
+
+    oscRatioLabel.setBounds(oscRatioSlider.getX() - labelExtraWidth / 2,
+        oscRatioSlider.getBottom() - labelYOffset,
+        oscRatioSlider.getWidth() + labelExtraWidth,
+        labelHeight);
 }
 
-void OscComp::initializeSlider(juce::Slider& slider, juce::Label& label, const juce::String& name, juce::Slider::SliderStyle style, double min, double max, double interval, double initialValue)
+void OscComp::initializeSlider(juce::Slider& slider, juce::Label& label, const juce::String& name, juce::Slider::SliderStyle style, double initialValue)
 {
     addAndMakeVisible(slider);
     slider.setSliderStyle(style);
     slider.setTextBoxStyle(juce::Slider::NoTextBox, false, 50, 20);
-    slider.setRange(min, max, interval);
-    slider.setValue(initialValue);
+    //slider.setRange(min, max, interval);
+    //slider.setValue(initialValue);
     slider.addListener(this);
     slider.setDoubleClickReturnValue(true, initialValue);
-    
+
+    addAndMakeVisible(label);
+    label.setText(name, juce::dontSendNotification);
+}
+void OscComp::initializeSlider(juce::Slider& slider, juce::Label& label, const juce::String& name, juce::Slider::SliderStyle style, double initialValue, double midpointValue)
+{
+    addAndMakeVisible(slider);
+    slider.setSliderStyle(style);
+    slider.setTextBoxStyle(juce::Slider::NoTextBox, false, 50, 20);
+    //slider.setRange(min, max, interval);
+    //slider.setValue(initialValue);
+    slider.addListener(this);
+    slider.setDoubleClickReturnValue(true, initialValue);
+    slider.setSkewFactorFromMidPoint(midpointValue);
+
     addAndMakeVisible(label);
     label.setText(name, juce::dontSendNotification);
 }

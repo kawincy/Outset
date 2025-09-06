@@ -51,14 +51,20 @@ resonanceAttachment(apvtsRef, "RESONANCE", resonanceSlider)
     addAndMakeVisible(qLabel);
 
 
-    for (auto* textbox : { &cutoffTextBox, &resonanceTextBox }) {
-        textbox->setMultiLine(false);
-        textbox->setReturnKeyStartsNewLine(false);
-        textbox->setText(juce::String(cutoffSlider.getValue()), false);
-        textbox->setJustification(juce::Justification::centredTop);
-        textbox->applyFontToAllText(juce::Font(juce::FontOptions(12.0f, juce::Font::plain)));
-        textbox->applyColourToAllText(colors().main);
-    }
+    //for (auto* textbox : { &cutoffTextBox, &resonanceTextBox }) {
+        cutoffTextBox.setMultiLine(false);
+        cutoffTextBox.setReturnKeyStartsNewLine(false);
+        cutoffTextBox.setText(juce::String(cutoffSlider.getValue()), false);
+        cutoffTextBox.setJustification(juce::Justification::centredTop);
+        cutoffTextBox.applyFontToAllText(juce::Font(juce::FontOptions(12.0f, juce::Font::plain)));
+        cutoffTextBox.applyColourToAllText(colors().main);
+        resonanceTextBox.setMultiLine(false);
+        resonanceTextBox.setReturnKeyStartsNewLine(false);
+        resonanceTextBox.setText(juce::String(resonanceSlider.getValue()), false);
+        resonanceTextBox.setJustification(juce::Justification::centredTop);
+        resonanceTextBox.applyFontToAllText(juce::Font(juce::FontOptions(12.0f, juce::Font::plain)));
+        resonanceTextBox.applyColourToAllText(colors().main);
+    //}
 
     // Cutoff text box setup
     cutoffTextBox.onReturnKey = [this] {
@@ -250,8 +256,8 @@ void FilterComp::paint(juce::Graphics& g)
     float freq = cutoffSlider.getValue();
     float q = resonanceSlider.getValue();
 
-    cutoffTextBox.setBounds(cutoffSlider.getX()-2, cutoffSlider.getY() - 12, 40, 17);
-    resonanceTextBox.setBounds(resonanceSlider.getX()-2, resonanceSlider.getY() - 12, 40, 17);
+    cutoffTextBox.setBounds(cutoffSlider.getX() + 2, cutoffSlider.getY() - 12, 40, 17);
+    resonanceTextBox.setBounds(resonanceSlider.getX() + 2, resonanceSlider.getY() - 12, 40, 17);
 
 }
 
@@ -266,7 +272,7 @@ void FilterComp::resized()
     auto sliderArea = bounds;
     auto sliderWidth = sliderArea.getWidth() / 2;
 
-    auto knobSize = juce::jmin(sliderWidth * 0.6f, 35.0f);
+    auto knobSize = juce::jmin(sliderWidth * 0.6f, 45.f);
 
     auto cutoffArea = sliderArea.removeFromLeft(sliderWidth);
     auto resonanceArea = sliderArea;

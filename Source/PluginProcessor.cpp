@@ -23,6 +23,7 @@ OutsetAudioProcessor::OutsetAudioProcessor()
 #endif
 {
     filter = std::make_unique<Filters>();
+    scope = std::make_unique<Scope>();
 }
 
 OutsetAudioProcessor::~OutsetAudioProcessor()
@@ -164,25 +165,57 @@ void OutsetAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce:
     
     //our code (non-template stuff) starts here
   
+    double cutoff = apvts.getRawParameterValue("CUTOFF")->load();
+	double q = apvts.getRawParameterValue("RESONANCE")->load();
+    double attack1 = apvts.getRawParameterValue("ATTACK_1")->load();
+	double decay1 = apvts.getRawParameterValue("DECAY_1")->load();
+	double sustain1 = apvts.getRawParameterValue("SUSTAIN_1")->load();
+	double release1 = apvts.getRawParameterValue("RELEASE_1")->load();
+    double fine1 = apvts.getRawParameterValue("FINE_1")->load();
+
+    const int numOperators = 6;
+
+	std::vector<float> level(numOperators);
+	std::vector<float> fine(numOperators);
+	std::vector<float> coarse(numOperators);
+	std::vector<float> ratio(numOperators);
+    std::vector<double> attack(numOperators);
+	std::vector<double> decay(numOperators);
+	std::vector<double> sustain(numOperators);
+	std::vector<double> release(numOperators);
+
+    for (int i = 0; i < numOperators; ++i) {
+		level[i] = apvts.getRawParameterValue("LEVEL_" + juce::String(i + 1))->load();
+		fine[i] = apvts.getRawParameterValue("FINE_" + juce::String(i + 1))->load();
+		coarse[i] = apvts.getRawParameterValue("COARSE_" + juce::String(i + 1))->load();
+		ratio[i] = apvts.getRawParameterValue("RATIO_" + juce::String(i + 1))->load();
+		attack[i] = apvts.getRawParameterValue("ATTACK_" + juce::String(i + 1))->load();
+		decay[i] = apvts.getRawParameterValue("DECAY_" + juce::String(i + 1))->load();
+		sustain[i] = apvts.getRawParameterValue("SUSTAIN_" + juce::String(i + 1))->load();
+		release[i] = apvts.getRawParameterValue("RELEASE_" + juce::String(i + 1))->load();
+    }
+
+
+    //DBG(cutoff);
+    //DBG(attack3);
+    //DBG(fine1);
     
-    
-	filter->setCutoffFrequency(1000.0f);
-	filter->setResonance(0.7f);
+	filter->setCutoffFrequency(cutoff);
+	filter->setResonance(q);
+	for (int i = 0; i < 6; i++) {
+
+		synth.updateOsc(fine[i], coarse[i], level[i], ratio[i], i);
+		synth.updateADSR(attack[i], decay[i], sustain[i], release[i], i);
+	}
     keyboardState.processNextMidiBuffer(midiMessages, 0, buffer.getNumSamples(), true);
     splitBufferByEvents(buffer, midiMessages);
     filter->processBlock(buffer);
     
+	scope->setAudioData(buffer);
     
     
     //uncomment these to check that parameters and sliders are linked
-//    double cutoff = apvts.getRawParameterValue("CUTOFF")->load();
-//    double attack3 = apvts.getRawParameterValue("ATTACK_3")->load();
-//    double fine1 = apvts.getRawParameterValue("FINE_1")->load();
-//    
-//    
-//    DBG(cutoff);
-//    DBG(attack3);
-//    DBG(fine1);
+
 
 }
 
@@ -279,7 +312,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout OutsetAudioProcessor::create
     }
 
     // Fine Parameters (6)
-    juce::NormalisableRange<float> fineRange(0.0f, 100.0f, 1.0f);
+    juce::NormalisableRange<float> fineRange(-100.0f, 100.0f, 1.0f);
     for (int i = 1; i <= 6; ++i)
     {
         layout.add(std::make_unique<juce::AudioParameterFloat>(
@@ -290,16 +323,54 @@ juce::AudioProcessorValueTreeState::ParameterLayout OutsetAudioProcessor::create
     }
 
     // Coarse Parameters (6)
-    juce::NormalisableRange<float> coarseRange(1.0f, 12.0f, 1.0f);
+    juce::NormalisableRange<float> coarseRange(-12.0f, 12.0f, 1.0f);
     for (int i = 1; i <= 6; ++i)
     {
         layout.add(std::make_unique<juce::AudioParameterFloat>(
             juce::ParameterID("COARSE_" + juce::String(i), 1),
             "Coarse" + juce::String(i),
             coarseRange,
+            0.0f));
+    }
+	// Ratio Parameters (6)
+    auto skewRatio = 1.0f; // Set your desired midpoint value here
+
+    juce::NormalisableRange<float> ratioRange = juce::NormalisableRange<float>(
+        0.01f, 9.f,
+        [skewRatio](float start, float end, float normalised)
+        {
+            // Apply skew first
+            float skewedNormalised = normalised < 0.5f
+                ? juce::jmap(normalised, 0.0f, 0.5f, 0.0f, skewRatio / (end - start))
+                : juce::jmap(normalised, 0.5f, 1.0f, skewRatio / (end - start), 1.0f);
+
+            float value = juce::jmap(skewedNormalised, start, end);
+
+            // Apply granular increments below 2, integer increments above
+            return (value < 2.0f) ? std::round(value * 100.0f) / 100.0f : std::round(value);
+        },
+        // Value-to-normalised lambda (with inverse skew)
+        [skewRatio](float start, float end, float value)
+        {
+            float proportion = (value - start) / (end - start);
+            float skewProportion = skewRatio / (end - start);
+
+            float normalised = proportion < skewProportion
+                ? juce::jmap(proportion, 0.0f, skewProportion, 0.0f, 0.5f)
+                : juce::jmap(proportion, skewProportion, 1.0f, 0.5f, 1.0f);
+
+            return juce::jlimit(0.0f, 1.0f, normalised);
+        },
+        nullptr);
+
+    for (int i = 1; i <= 6; ++i)
+    {
+        layout.add(std::make_unique<juce::AudioParameterFloat>(
+            juce::ParameterID("RATIO_" + juce::String(i), 1),
+            "Ratio" + juce::String(i),
+            ratioRange,
             1.0f));
     }
-
     // Cutoff Parameter (1)
     juce::NormalisableRange<float> cutoffRange(20.0f, 20000.0f, 1.0f);
     cutoffRange.setSkewForCentre(1000.0f);

@@ -129,10 +129,11 @@ void EnvComp::paint(juce::Graphics& g)
     g.setFont(juce::Font(juce::FontOptions(12.0f)));
     
     auto valueStr = [](float value) { return juce::String(value, 2); };
-    g.drawText(valueStr(attack), attackSlider.getBounds().translated(0, -15), juce::Justification::centred);
-    g.drawText(valueStr(decay), decaySlider.getBounds().translated(0, -15), juce::Justification::centred);
-    g.drawText(valueStr(sustain), sustainSlider.getBounds().translated(0, -15), juce::Justification::centred);
-    g.drawText(valueStr(release), releaseSlider.getBounds().translated(0, -15), juce::Justification::centred);
+    int valYOffset = -20;
+    g.drawText(valueStr(attack), attackSlider.getBounds().translated(0, valYOffset), juce::Justification::centred);
+    g.drawText(valueStr(decay), decaySlider.getBounds().translated(0, valYOffset), juce::Justification::centred);
+    g.drawText(valueStr(sustain), sustainSlider.getBounds().translated(0, valYOffset), juce::Justification::centred);
+    g.drawText(valueStr(release), releaseSlider.getBounds().translated(0, valYOffset), juce::Justification::centred);
 }
 
 void EnvComp::resized()
@@ -145,7 +146,7 @@ void EnvComp::resized()
     auto sliderArea = bounds;
     auto sliderWidth = sliderArea.getWidth() / 4;
     
-    auto knobSize = juce::jmin(sliderWidth * 0.6f, 35.0f);
+    auto knobSize = juce::jmin(sliderWidth * 0.6f, 45.f);
     
     // Lambda to position sliders and the A/D/S/R label
     auto setupSliderAndLabel = [&](juce::Slider& slider, juce::Label& label, juce::Rectangle<int> area) {
