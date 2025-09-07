@@ -15,8 +15,8 @@ class AlgSpace
 {
 public:
 
-	AlgSpace() {};
-	~AlgSpace() {};
+	AlgSpace() = default;
+	~AlgSpace() = default;
 
     /*
 	setAlgorithm will set modulation routing, assign carriers, and set feedback 
@@ -27,26 +27,30 @@ public:
 			jassertfalse;
 			return;
 		}
+		// clear routings
+		for (auto& opRef : op)
+			opRef.resetRouting();
+
 		const auto& alg = algTable[algIndex];
 		// map is one-based indexing, hence - 1
 		for (const auto& routing : alg.routings)
 			op[routing.modulated - 1].addModOperator(&op[routing.modulator - 1]);
 		for (int c : alg.carriers)
 			op[c - 1].setCarrier(true);
-		for (int f : alg.feedbackOperator)
-			op[f - 1].setFeedback(true);
+		if (alg.feedbackOperator != -1)
+			op[alg.feedbackOperator - 1].setFeedback(true);
 	}
 private:
-	struct Routing {
+	struct algRouting {
 		int modulated;
 		int modulator;
 	};
-	struct Description {
-		std::vector<Routing> routings;
+	struct algDescription {
+		std::vector<algRouting> routings;
 		std::vector<int> carriers;
 		int feedbackOperator; // -1 means no feedback opereator
 	};
-	const std::vector<Description> algTable = {
+	const std::vector<algDescription> algTable = {
 		/*
 		Format:
 		{ { {modulated, modulator}, ... }, // routings

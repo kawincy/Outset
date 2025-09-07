@@ -15,6 +15,7 @@
 #include <vector>
 #include <map>
 #include <algorithm>
+#include "AlgSpace.h"
 
 // VoiceHandler class manages polyphony by routing incoming note events to a collection of Voice objects.
 class VoiceHandler
@@ -25,16 +26,28 @@ public:
     VoiceHandler(int maxPolyphony = 8)
         : maxPolyphony(maxPolyphony)
     {
+        algIndex = 0;
         voices.resize(maxPolyphony);
         for (auto& voice : voices)
         {
             voice.init();
+            algSpace.setAlgorithm(voice.op, 0);
         }
     }
 
     /// Destructor.
-    ~VoiceHandler() {}
-
+    ~VoiceHandler() = default;
+    void updateAlgorithm(int algIndex_)
+    {
+        if (algIndex_ == algIndex)
+            return;
+        for (auto& voice : voices)
+        {
+            voice.resetCache();
+            algSpace.setAlgorithm(voice.op, algIndex_);
+        }
+        algIndex = algIndex_;
+    };
     /// Trigger a note on event.
     /// If the note is already active, it retriggers that voice.
     /// Otherwise, it assigns the note to an available voice, or steals one if necessary.
@@ -88,13 +101,14 @@ public:
 
     /// Reset all voices and clear active note mappings.
     /// @param sampleRate The current sample rate to pass to each voice.
-    void reset(float sampleRate)
+    void reset(float sampleRate_)
     {
         for (auto& voice : voices)
         {
-            voice.reset(sampleRate);
+            voice.reset(sampleRate_);
         }
         activeNotes.clear();
+        sampleRate = sampleRate_;
     }
 	void resetCaches()
 	{
@@ -145,5 +159,8 @@ private:
         }
         return nullptr; // This should not occur if maxPolyphony > 0.
     }
-
+private:
+    AlgSpace algSpace;
+    int algIndex;
+    float sampleRate;
 };

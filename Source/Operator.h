@@ -24,6 +24,7 @@ public:
 
 	void setLevel(float amplitude);
 	void addModOperator(Operator* modulator);
+	void resetRouting();
 	// having multiple operators has to be handled carefully. We cannot call nextSample() multiple
 	float getNextSample();
 	void noteOn(int note, int velocity);

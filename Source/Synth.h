@@ -26,10 +26,10 @@ public:
     void midiMessage(uint8_t data0, uint8_t data1, uint8_t data2);
     void updateADSR(float attack, float decay, float sustain, float release, int index); // May need an additional int input for what oscillator is being updated depending on our desired topology
     void updateOsc(float fine, float coarse, float level, float ratio, int index);
+    void updateAlgorithm(int algIndex_);
 private:
     void noteOn(int note, int velocity);
     void noteOff(int note);
-    
     float sampleRate;
     VoiceHandler voiceHandler; //will eventually be a collection of voices. likely a vector
     //NoiseGenerator noiseGen;

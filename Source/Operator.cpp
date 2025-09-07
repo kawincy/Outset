@@ -93,6 +93,12 @@ void Operator::addModOperator(Operator* mod)
 	modOperators.push_back(mod);
 }
 
+void Operator::resetRouting()
+{
+	modOperators.clear();
+	setFeedback(false);
+	setCarrier(false);
+}
 
 
 float Operator::getNextSample()

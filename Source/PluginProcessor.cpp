@@ -167,12 +167,7 @@ void OutsetAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce:
   
     double cutoff = apvts.getRawParameterValue("CUTOFF")->load();
 	double q = apvts.getRawParameterValue("RESONANCE")->load();
-    double attack1 = apvts.getRawParameterValue("ATTACK_1")->load();
-	double decay1 = apvts.getRawParameterValue("DECAY_1")->load();
-	double sustain1 = apvts.getRawParameterValue("SUSTAIN_1")->load();
-	double release1 = apvts.getRawParameterValue("RELEASE_1")->load();
-    double fine1 = apvts.getRawParameterValue("FINE_1")->load();
-
+    int algIndex = apvts.getRawParameterValue("ALG_INDEX")->load();
     const int numOperators = 6;
 
 	std::vector<float> level(numOperators);
@@ -202,6 +197,7 @@ void OutsetAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce:
     
 	filter->setCutoffFrequency(cutoff);
 	filter->setResonance(q);
+    synth.updateAlgorithm(algIndex);
 	for (int i = 0; i < 6; i++) {
 
 		synth.updateOsc(fine[i], coarse[i], level[i], ratio[i], i);
