@@ -5,6 +5,7 @@
               pluginCharacteristicsValue="pluginIsSynth,pluginProducesMidiOut,pluginWantsMidiIn">
   <MAINGROUP id="YW4tEd" name="Outset">
     <GROUP id="{08B4255C-6792-1333-C4D2-110BD672E3EA}" name="Source">
+      <FILE id="T2ypSV" name="AlgSpace.h" compile="0" resource="0" file="Source/AlgSpace.h"/>
       <FILE id="psm5WR" name="VoiceHandler.h" compile="0" resource="0" file="Source/VoiceHandler.h"/>
       <FILE id="dU77Tv" name="Operator.cpp" compile="1" resource="0" file="Source/Operator.cpp"/>
       <FILE id="bvIe14" name="Operator.h" compile="0" resource="0" file="Source/Operator.h"/>

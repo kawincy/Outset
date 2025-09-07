@@ -24,6 +24,7 @@ public:
 
 	void setLevel(float amplitude);
 	void addModOperator(Operator* modulator);
+	void resetRouting();
 	// having multiple operators has to be handled carefully. We cannot call nextSample() multiple
 	float getNextSample();
 	void noteOn(int note, int velocity);
@@ -49,7 +50,7 @@ private:
 	float lastSample = 0.f;
 	float cachedSample;
 	int opIndex;
-	float sampleRate, frequency, level, ratio, tuning;
+	float sampleRate, baseFrequency, level, ratio, tuning;
 	int note;
 	std::vector<Operator*> modOperators;
 	juce::SmoothedValue<float, juce::ValueSmoothingTypes::Multiplicative> freqSmooth; //multiplicative for frequency per juce docs

@@ -19,14 +19,15 @@ struct Voice {
             op.emplace_back(i);
             op[i].init(i);
         }
-        op[0].addModOperator(&op[1]);
-        DBG("Op " << 0 << "modulated by Op " << 1);
-        for (int i = 2; i < 5; i++) {
-            op[i].addModOperator(&op[i + 1]);
-            DBG("Op " << i << "modulated by Op " << i + 1);
-        }
-		op[0].setCarrier(true);
-        op[2].setCarrier(true);
+
+  //      op[0].addModOperator(&op[1]);
+  //      DBG("Op " << 0 << "modulated by Op " << 1);
+  //      for (int i = 2; i < 5; i++) {
+  //          op[i].addModOperator(&op[i + 1]);
+  //          DBG("Op " << i << "modulated by Op " << i + 1);
+  //      }
+		//op[0].setCarrier(true);
+  //      op[2].setCarrier(true);
     }
     
     void reset(float sampleRate) {

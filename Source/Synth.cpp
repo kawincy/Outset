@@ -67,7 +67,10 @@ void Synth::noteOff(int note)
     voiceHandler.noteOff(note);
     DBG("NOTE OFF " << note);
 }
-
+void Synth::updateAlgorithm(int algIndex_)
+{
+    voiceHandler.updateAlgorithm(algIndex_);
+}
 void Synth::updateOsc(float fine, float coarse, float level, float ratio, int index)
 {
     // In a polyphonic setting, apply oscillator adjustments
