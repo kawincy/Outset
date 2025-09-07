@@ -173,12 +173,10 @@ void Operator::noteOn(int note_, int velocity)
 {
 	note = note_;
 	float freq = ratio * 440.0f * std::exp2(float(note - 69 + tuning) / 12.0f); // this is the midi to freq formula
-	DBG("Operator " << opIndex << " initial freq: " << freq);
 	baseFrequency = freq; // stable base
 	setFrequency(baseFrequency); // ensure oscillator increment set immediately
 	osc.amplitude = (velocity / 127.0f) * 0.5f;
 	env.noteOn();
-	DBG("Operator " << opIndex << " second freq: " << osc.getFrequency());
 	lastSample = 0.f; // clear feedback for consistent retrigger
 	cached = false; // force recache in modulators
 

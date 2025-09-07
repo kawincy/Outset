@@ -56,7 +56,6 @@ void Synth::render(float** outputBuffers, int sampleCount)
 
 void Synth::noteOn(int note, int velocity)
 {
-    DBG("Note on: " << note);
     // Delegate note-on to the voice handler.
     voiceHandler.noteOn(note, velocity);
 }
@@ -65,7 +64,6 @@ void Synth::noteOff(int note)
 {
     // Delegate note-off to the voice handler.
     voiceHandler.noteOff(note);
-    DBG("NOTE OFF " << note);
 }
 void Synth::updateAlgorithm(int algIndex_)
 {
