@@ -74,7 +74,7 @@ public:
         auto tabBarHeight = getTabbedButtonBar().getHeight();
         auto contentArea = area.withTrimmedTop(tabBarHeight);
         const int size = 42;
-        opLock.setBounds(area.removeFromRight(size + 6).removeFromTop(size/2.f).withSizeKeepingCentre(size, size));
+        opLock.setBounds(area.removeFromRight(size + 6).removeFromTop(size + 6).withSizeKeepingCentre(size, size));
     }
 private:
     void setParamValue(const juce::String& prefix, int oneBasedIndex, float value)
