@@ -28,6 +28,24 @@ private:
     void initializeSlider(juce::Slider& slider, const juce::String& name, double min, double max, double interval, double initialValue, bool skewed);
     void sliderValueChanged(juce::Slider* slider) override;
     void setSliderBounds(juce::Slider& slider, juce::Label& label, juce::Rectangle<int> bounds);
+public:
+  // Accessors for current envelope values
+  float getAttack()  const { return (float) attackSlider.getValue(); }
+  float getDecay()   const { return (float) decaySlider.getValue(); }
+  float getSustain() const { return (float) sustainSlider.getValue(); }
+  float getRelease() const { return (float) releaseSlider.getValue(); }
+
+  // Set all envelope parameters at once (no notification to avoid recursive callbacks)
+  void setAll(float a, float d, float s, float r)
+  {
+    attackSlider.setValue(a, juce::dontSendNotification);
+    decaySlider.setValue(d, juce::dontSendNotification);
+    sustainSlider.setValue(s, juce::dontSendNotification);
+    releaseSlider.setValue(r, juce::dontSendNotification);
+    repaint();
+  }
+
+  std::function<void(float attack, float decay, float sustain, float release)> onEnvChange; // callback for external sync
     juce::Slider attackSlider;
     juce::Slider decaySlider;
     juce::Slider sustainSlider;

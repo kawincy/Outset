@@ -27,6 +27,8 @@ public:
         addAndMakeVisible(envComp);
     }
 
+  EnvComp& getEnvComp() noexcept { return envComp; }
+
     void resized() override
     {
         auto bounds = getLocalBounds();

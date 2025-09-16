@@ -42,15 +42,16 @@ public:
 	void setFeedback(bool isFeedback) { feedback = isFeedback; }
 	Oscillator osc;
 	juce::ADSR env;
-
+	void setCached() { cached = true; }
 private:
 	bool feedback = false; // feedback operator assignment
 	bool carrier = false; // carrier operator assignment
 	bool cached; // has the next sample been processed yet?
+	bool inProgress = false; // re-entrancy guard to break cycles
 	float lastSample = 0.f;
-	float cachedSample;
+	float cachedSample = 0.f;
 	int opIndex;
-	float sampleRate, baseFrequency, level, ratio, tuning;
+	float sampleRate, baseFrequency, level, ratio, tuning, envValue, ampValue;
 	int note;
 	std::vector<Operator*> modOperators;
 	juce::SmoothedValue<float, juce::ValueSmoothingTypes::Multiplicative> freqSmooth; //multiplicative for frequency per juce docs

@@ -20,8 +20,11 @@
         <FILE id="LYGaEL" name="Oscillator.h" compile="0" resource="0" file="Source/DSP/Oscillator.h"/>
       </GROUP>
       <GROUP id="{D000975A-FD13-24BE-CFE2-76B8EFA2C9CE}" name="GUI">
+        <FILE id="koj5Gp" name="OpLock.h" compile="0" resource="0" file="Source/GUI/OpLock.h"/>
         <FILE id="SAvITy" name="Scope.h" compile="0" resource="0" file="Source/GUI/Scope.h"/>
         <GROUP id="{B02D3D08-A9D3-894C-D0E2-70D7EDCB3FA2}" name="images">
+          <FILE id="fROUHm" name="unlocked.svg" compile="0" resource="1" file="Images/unlocked.svg"/>
+          <FILE id="CymZN5" name="locked.svg" compile="0" resource="1" file="Images/locked.svg"/>
           <FILE id="EdCQT8" name="algorithm_1.png" compile="0" resource="1" file="Images/algorithm_1.png"/>
           <FILE id="NUsrza" name="algorithm_2.png" compile="0" resource="1" file="Images/algorithm_2.png"/>
           <FILE id="KbgItp" name="algorithm_3.png" compile="0" resource="1" file="Images/algorithm_3.png"/>
