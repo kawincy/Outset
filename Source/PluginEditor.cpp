@@ -11,7 +11,8 @@
 
 //==============================================================================
 OutsetAudioProcessorEditor::OutsetAudioProcessorEditor (OutsetAudioProcessor& p, juce::MidiKeyboardState& ks )
-: AudioProcessorEditor (&p), audioProcessor (p), filter_comp(audioProcessor.apvts), keyboard_comp(ks), lfo_comp(audioProcessor.apvts), osc_env_tab(audioProcessor.apvts)
+: AudioProcessorEditor (&p), audioProcessor (p), filter_comp(audioProcessor.apvts), keyboard_comp(ks), lfo_comp(audioProcessor.apvts), osc_env_tab(audioProcessor.apvts),
+    presets_comp(audioProcessor.getPresetManager())
 {
     double ratio = 4.0 / 3.0;
     setResizeLimits(400, 400 / ratio, 1200, 1200 / ratio);
@@ -24,6 +25,7 @@ OutsetAudioProcessorEditor::OutsetAudioProcessorEditor (OutsetAudioProcessor& p,
     addAndMakeVisible(lfo_comp);
     addAndMakeVisible(osc_env_tab);
 	setResizable(true, true);
+    
 }
 
 OutsetAudioProcessorEditor::~OutsetAudioProcessorEditor()

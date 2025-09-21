@@ -24,6 +24,10 @@ OutsetAudioProcessor::OutsetAudioProcessor()
 {
     filter = std::make_unique<Filters>();
     scope = std::make_unique<Scope>();
+    
+    apvts.state.setProperty(PresetManager::presetNameProperty, "", nullptr);
+    apvts.state.setProperty("version", ProjectInfo::versionString, nullptr);
+    presetManager = std::make_unique<PresetManager>(apvts);
 }
 
 OutsetAudioProcessor::~OutsetAudioProcessor()
