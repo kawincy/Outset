@@ -16,92 +16,23 @@
 class PresetPanel : public juce::Component, juce::Button::Listener, juce::ComboBox::Listener
     {
     public:
-        PresetPanel(PresetManager& pm) : presetManager(pm)
-        {
-            configureButton(saveButton, "Save");
-            configureButton(deleteButton, "Delete");
-            configureButton(previousButton, "<-");
-            configureButton(nextButton, "->");
-            
-            presetList.setTextWhenNothingSelected("None");
-            presetList.setMouseCursor(juce::MouseCursor::PointingHandCursor);
-            addAndMakeVisible(presetList);
-            presetList.addListener(this);
-            
-            
-            loadPresetList();
-        }
+        PresetPanel(PresetManager& pm);
         
-        ~PresetPanel()
-        {
-            saveButton.removeListener(this);
-            deleteButton.removeListener(this);
-            previousButton.removeListener(this);
-            nextButton.removeListener(this);
-            presetList.removeListener(this);
-        }
+        ~PresetPanel();
         
-        void resized() override
-        {
-            const auto container = getLocalBounds().reduced(4);
-            auto bounds = container;
-            
-            saveButton.setBounds(bounds.removeFromLeft(container.proportionOfWidth(0.2f)).reduced(4));
-            previousButton.setBounds(bounds.removeFromLeft(container.proportionOfWidth(0.1f)).reduced(4));
-            presetList.setBounds(bounds.removeFromLeft(container.proportionOfWidth(0.4f)).reduced(4));
-            nextButton.setBounds(bounds.removeFromLeft(container.proportionOfWidth(0.1f)).reduced(4));
-            deleteButton.setBounds(bounds.reduced(4));
-        }
+        void resized() override;
+        
         
         
     private:
-        void configureButton(juce::Button& button, const juce::String& buttonText)
-        {
-            button.setButtonText(buttonText);
-            button.setMouseCursor(juce::MouseCursor::PointingHandCursor);
-            addAndMakeVisible(button);
-            button.addListener(this);
-        }
+        void configureButton(juce::Button& button, const juce::String& buttonText);
         
-        void buttonClicked(juce::Button* button) override {
-            
-            if (button == &saveButton) {
-                fileChooser = std::make_unique<juce::FileChooser>("please enter the name of the preset to save",
-                                    PresetManager::defaultDirectory, "*." + PresetManager::extension);
-                fileChooser->launchAsync(juce::FileBrowserComponent::saveMode, [&](const juce::FileChooser& chooser) {
-                    const auto resultFile = chooser.getResult();
-                    presetManager.savePreset(resultFile.getFileNameWithoutExtension());
-                    loadPresetList();
-                });
-            }
-            
-            if (button == &previousButton)
-            {
-                const int index = presetManager.loadPreviousPreset();
-                presetList.setSelectedItemIndex(index, juce::dontSendNotification);
-            }
-            if (button == &nextButton)
-            {
-                const int index = presetManager.loadNextPreset();
-                presetList.setSelectedItemIndex(index, juce::dontSendNotification);
-            }
-            if (button == &deleteButton)
-            {
-                presetManager.deletePreset(presetManager.getCurrentPreset());
-                loadPresetList();
-            }
-        }
-        void comboBoxChanged(juce::ComboBox* comboBoxThatHasChanged) override {
-            presetManager.loadPreset(presetList.getItemText(presetList.getSelectedItemIndex()));
-        }
+        void buttonClicked(juce::Button* button) override;
+       
+        void comboBoxChanged(juce::ComboBox* comboBoxThatHasChanged) override;
         
-        void loadPresetList() {
-            presetList.clear(juce::dontSendNotification);
-            const auto allPresets = presetManager.getAllPresets();
-            const auto currentPreset = presetManager.getCurrentPreset();
-            presetList.addItemList(allPresets, 1);
-            presetList.setSelectedItemIndex(allPresets.indexOf(currentPreset), juce::dontSendNotification);
-        }
+        void loadPresetList();
+        
         
         PresetManager& presetManager;
         juce::TextButton saveButton, deleteButton, previousButton, nextButton;
