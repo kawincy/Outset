@@ -12,6 +12,12 @@
 #include "DSP/Oscillator.h"
 #include <JuceHeader.h>
 
+enum class ModulationType
+{
+	FM,  // Frequency modulation (modulate Hz)
+	PM   // Phase modulation (DX7-style, modulate phase angle)
+};
+
 class Operator
 {
 public:
@@ -40,6 +46,10 @@ public:
 	void setCarrier(bool isCarrier) { carrier = isCarrier; }
 	bool isFeedback() { return feedback; }
 	void setFeedback(bool isFeedback) { feedback = isFeedback; }
+	void setModulationType(ModulationType type) { modulationType = type; }
+	ModulationType getModulationType() const { return modulationType; }
+	void setModulationIndex(float index) { modulationIndex = index; }
+	float getModulationIndex() const { return modulationIndex; }
 	Oscillator osc;
 	juce::ADSR env;
 	void setCached() { cached = true; }
@@ -48,6 +58,8 @@ private:
 	bool carrier = false; // carrier operator assignment
 	bool cached; // has the next sample been processed yet?
 	bool inProgress = false; // re-entrancy guard to break cycles
+	ModulationType modulationType = ModulationType::PM; // Default to DX7-style phase modulation
+	float modulationIndex = 1.0f; // Modulation depth (FM index or PM index)
 	float lastSample = 0.f;
 	float cachedSample = 0.f;
 	int opIndex;

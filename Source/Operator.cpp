@@ -118,6 +118,7 @@ float Operator::getCachedSample()
 
 	inProgress = true;
 
+	// --- Gather modulation sum ---
 	float modSample = 0.f;
 	if (feedback)
 		modSample += lastSample * 0.25f; // scaled feedback
@@ -128,19 +129,34 @@ float Operator::getCachedSample()
 			modSample += mod->getCachedSample();
 	}
 
-	// Frequency modulation
-	constexpr float modulationIndex = 1.f; // TODO parameterize
-	float deviation = modulationIndex * modSample * baseFrequency;
-	float currentFreq = baseFrequency + deviation;
-	if (currentFreq < 0.f) currentFreq = 0.f;
-	setFrequency(currentFreq);
-
-	// Advance envelope & amplitude smoothing once
+	// --- Advance envelope & amplitude smoothing once per sample ---
 	envValue = env.getNextSample();
 	ampSmooth.setTargetValue(osc.amplitude * level * envValue);
 	ampValue = ampSmooth.getNextValue();
 
-	cachedSample = osc.nextSample() * ampValue;
+	// --- Apply modulation based on mode ---
+	float output = 0.f;
+
+	if (modulationType == ModulationType::FM)
+	{
+		// Frequency Modulation: modulate instantaneous frequency (Hz)
+		float deviation = modulationIndex * modSample * baseFrequency;
+		float currentFreq = baseFrequency + deviation;
+		if (currentFreq < 0.f) currentFreq = 0.f;
+		setFrequency(currentFreq);
+		output = osc.nextSample() * ampValue;
+	}
+	else // ModulationType::PM
+	{
+		// Phase Modulation (DX7-style): modulate phase angle directly
+		// Keep base frequency stable (only update on note/param changes)
+		setFrequency(baseFrequency);
+		// Scale modulator output to radians (modulationIndex controls depth)
+		float phaseOffsetRadians = modulationIndex * modSample;
+		output = osc.nextSample(phaseOffsetRadians) * ampValue;
+	}
+
+	cachedSample = output;
 	lastSample = 0.5f * (cachedSample + lastSample); // mild smoothing for feedback tone
 
 	cached = true;
