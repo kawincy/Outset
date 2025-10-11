@@ -14,11 +14,12 @@
 #include "PresetsComp.h"
 
 //==============================================================================
-PresetsComp::PresetsComp()
+PresetsComp::PresetsComp(PresetManager& pm) :
+    presetPanel(pm)
 {
     // In your constructor, you should add any child components, and
     // initialise any special settings that your component needs.
-
+    addAndMakeVisible(presetPanel);
 }
 
 PresetsComp::~PresetsComp()
@@ -36,4 +37,5 @@ void PresetsComp::paint (juce::Graphics& g)
 
 void PresetsComp::resized()
 {
+    presetPanel.setBounds(getBounds());
 }

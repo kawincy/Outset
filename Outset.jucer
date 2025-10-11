@@ -6,6 +6,11 @@
   <MAINGROUP id="YW4tEd" name="Outset">
     <GROUP id="{08B4255C-6792-1333-C4D2-110BD672E3EA}" name="Source">
       <FILE id="T2ypSV" name="AlgSpace.h" compile="0" resource="0" file="Source/AlgSpace.h"/>
+      <FILE id="RTdwLZ" name="PresetManager.cpp" compile="1" resource="0"
+            file="Source/PresetManager.cpp"/>
+      <FILE id="cmiLiq" name="PresetManager.h" compile="0" resource="0" file="Source/PresetManager.h"/>
+      <FILE id="uftt2G" name="PresetPanel.cpp" compile="1" resource="0" file="Source/PresetPanel.cpp"/>
+      <FILE id="nyoJTW" name="PresetPanel.h" compile="0" resource="0" file="Source/PresetPanel.h"/>
       <FILE id="psm5WR" name="VoiceHandler.h" compile="0" resource="0" file="Source/VoiceHandler.h"/>
       <FILE id="dU77Tv" name="Operator.cpp" compile="1" resource="0" file="Source/Operator.cpp"/>
       <FILE id="bvIe14" name="Operator.h" compile="0" resource="0" file="Source/Operator.h"/>

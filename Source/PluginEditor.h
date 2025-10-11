@@ -18,6 +18,7 @@
 #include "GUI/OscComp.h"
 #include "GUI/OscEnvTab.h"
 #include "GUI/Scope.h"
+
 //==============================================================================
 /**
 */
