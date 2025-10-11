@@ -33,8 +33,10 @@ public:
 
 		const auto& alg = algTable[algIndex];
 		// map is one-based indexing, hence - 1
-		for (const auto& routing : alg.routings)
-			op[routing.modulated - 1].addModOperator(&op[routing.modulator - 1]);
+		for (const auto& routing : alg.routings) {
+			if (routing.modulated > 0 && routing.modulator > 0)
+				op[routing.modulated - 1].addModOperator(&op[routing.modulator - 1]);
+		}
 		for (int c : alg.carriers)
 			op[c - 1].setCarrier(true);
 		if (alg.feedbackOperator != -1)
@@ -246,7 +248,7 @@ private:
 		},
 		// Alg 32
 		{
-			{{}},
+			{{-1, -1}},
 			{1, 2, 3, 4, 5, 6},
 			6
 		},

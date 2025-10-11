@@ -164,6 +164,8 @@ void EnvComp::resized()
 void EnvComp::sliderValueChanged(juce::Slider* slider)
 {
     repaint();
+    if (onEnvChange)
+        onEnvChange((float)attackSlider.getValue(), (float)decaySlider.getValue(), (float)sustainSlider.getValue(), (float)releaseSlider.getValue());
 }
 
 void EnvComp::setSliderBounds(juce::Slider& slider, juce::Label& label, juce::Rectangle<int> bounds)
