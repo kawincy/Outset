@@ -93,8 +93,8 @@
         <FILE id="Ex0nPe" name="EnvComp.h" compile="0" resource="0" file="Source/GUI/EnvComp.h"/>
         <FILE id="RyL90K" name="Colors.h" compile="0" resource="0" file="Source/GUI/Colors.h"/>
         <FILE id="XnsOrQ" name="Colors.cpp" compile="1" resource="0" file="Source/GUI/Colors.cpp"/>
-        <FILE id="MsK9Ch" name="LFOComp.cpp" compile="1" resource="0" file="Source/GUI/LFOComp.cpp"/>
-        <FILE id="PCUPkB" name="LFOComp.h" compile="0" resource="0" file="Source/GUI/LFOComp.h"/>
+        <FILE id="MsK9Ch" name="AlgComp.cpp" compile="1" resource="0" file="Source/GUI/AlgComp.cpp"/>
+        <FILE id="PCUPkB" name="AlgComp.h" compile="0" resource="0" file="Source/GUI/AlgComp.h"/>
         <FILE id="Z2Dvd8" name="KeyboardComp.cpp" compile="1" resource="0"
               file="Source/GUI/KeyboardComp.cpp"/>
         <FILE id="TcRm2K" name="KeyboardComp.h" compile="0" resource="0" file="Source/GUI/KeyboardComp.h"/>

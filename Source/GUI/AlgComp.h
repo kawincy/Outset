@@ -1,7 +1,7 @@
 /*
   ==============================================================================
 
-    LFOComp.h
+    AlgComp.h
     Created: 2 Feb 2025 12:49:27pm
     Author:  josep
 
@@ -15,11 +15,11 @@
 //==============================================================================
 /*
 */
-class LFOComp  : public juce::Component
+class AlgComp  : public juce::Component
 {
 public:
-    LFOComp(juce::AudioProcessorValueTreeState& apvtsRef);
-    ~LFOComp() override;
+    AlgComp(juce::AudioProcessorValueTreeState& apvtsRef);
+    ~AlgComp() override;
 
     void paint (juce::Graphics&) override;
     void resized() override;
@@ -35,5 +35,5 @@ private:
     std::unique_ptr<juce::DrawableButton> prev_b;
     juce::Image image;
     juce::Array<juce::Image> images;
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LFOComp)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AlgComp)
 };
