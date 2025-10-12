@@ -37,6 +37,6 @@ public:
     //float processSample(float sample);
 
 private:
-    // Using JUCE’s TPT state variable filter (recommended over the older version)
+    // Using JUCEâ€™s TPT state variable filter (recommended over the older version)
     juce::dsp::StateVariableTPTFilter<float> filter;
 };

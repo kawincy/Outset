@@ -25,16 +25,23 @@ public:
 //        sampleIndex = 0;
         phase = 0.0f;
     }
-    float nextSample()
+    
+    // Render sample with optional phase modulation offset (in radians)
+    float nextSample(float phaseOffsetRadians = 0.0f)
     {
+        // Compute modulated phase (normalized 0-1 + offset converted from radians)
+        float modulatedPhase = phase + (phaseOffsetRadians / TWO_PI);
+        
+        // Wrap to [0, 1) range
+        modulatedPhase = modulatedPhase - std::floor(modulatedPhase);
+        
+        // Advance carrier phase
         phase += inc;
         if (phase >= 1.0f) {
             phase -= 1.0f;
         }
-        return std::sin(TWO_PI * phase);
-//        float output = amplitude * std::sin(TWO_PI * sampleIndex * freq / sampleRate + phaseOffset);
-//        sampleIndex += 1;
-//        return output;
+        
+        return std::sin(TWO_PI * modulatedPhase);
     }
     float getFrequency()
     {

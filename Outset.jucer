@@ -5,23 +5,31 @@
               pluginCharacteristicsValue="pluginIsSynth,pluginProducesMidiOut,pluginWantsMidiIn">
   <MAINGROUP id="YW4tEd" name="Outset">
     <GROUP id="{08B4255C-6792-1333-C4D2-110BD672E3EA}" name="Source">
-      <FILE id="T2ypSV" name="AlgSpace.h" compile="0" resource="0" file="Source/AlgSpace.h"/>
-      <FILE id="psm5WR" name="VoiceHandler.h" compile="0" resource="0" file="Source/VoiceHandler.h"/>
-      <FILE id="dU77Tv" name="Operator.cpp" compile="1" resource="0" file="Source/Operator.cpp"/>
-      <FILE id="bvIe14" name="Operator.h" compile="0" resource="0" file="Source/Operator.h"/>
-      <FILE id="SKB858" name="Voice.h" compile="0" resource="0" file="Source/Voice.h"/>
-      <FILE id="N9EXJq" name="Synth.cpp" compile="1" resource="0" file="Source/Synth.cpp"/>
-      <FILE id="wKSYp9" name="Synth.h" compile="0" resource="0" file="Source/Synth.h"/>
+      <FILE id="RTdwLZ" name="PresetManager.cpp" compile="1" resource="0"
+            file="Source/PresetManager.cpp"/>
+      <FILE id="cmiLiq" name="PresetManager.h" compile="0" resource="0" file="Source/PresetManager.h"/>
+      <FILE id="uftt2G" name="PresetPanel.cpp" compile="1" resource="0" file="Source/PresetPanel.cpp"/>
+      <FILE id="nyoJTW" name="PresetPanel.h" compile="0" resource="0" file="Source/PresetPanel.h"/>
       <GROUP id="{B02D3D08-A9D3-894C-D0E2-70D7EDCB3FA2}" name="DSP">
+        <FILE id="FUG3g9" name="AlgSpace.h" compile="0" resource="0" file="Source/DSP/AlgSpace.h"/>
         <FILE id="vspn2h" name="Filters.cpp" compile="1" resource="0" file="Source/DSP/Filters.cpp"/>
         <FILE id="ypU5MK" name="Filters.h" compile="0" resource="0" file="Source/DSP/Filters.h"/>
         <FILE id="oEqigw" name="NoiseGenerator.h" compile="0" resource="0"
               file="Source/DSP/NoiseGenerator.h"/>
+        <FILE id="Xqim6W" name="Operator.cpp" compile="1" resource="0" file="Source/DSP/Operator.cpp"/>
+        <FILE id="amoy5F" name="Operator.h" compile="0" resource="0" file="Source/DSP/Operator.h"/>
         <FILE id="LYGaEL" name="Oscillator.h" compile="0" resource="0" file="Source/DSP/Oscillator.h"/>
+        <FILE id="ZRI9cO" name="Synth.cpp" compile="1" resource="0" file="Source/DSP/Synth.cpp"/>
+        <FILE id="BHVeBy" name="Synth.h" compile="0" resource="0" file="Source/DSP/Synth.h"/>
+        <FILE id="ldiEyV" name="Voice.h" compile="0" resource="0" file="Source/DSP/Voice.h"/>
+        <FILE id="okJXF8" name="VoiceHandler.h" compile="0" resource="0" file="Source/DSP/VoiceHandler.h"/>
       </GROUP>
       <GROUP id="{D000975A-FD13-24BE-CFE2-76B8EFA2C9CE}" name="GUI">
+        <FILE id="koj5Gp" name="OpLock.h" compile="0" resource="0" file="Source/GUI/OpLock.h"/>
         <FILE id="SAvITy" name="Scope.h" compile="0" resource="0" file="Source/GUI/Scope.h"/>
         <GROUP id="{B02D3D08-A9D3-894C-D0E2-70D7EDCB3FA2}" name="images">
+          <FILE id="fROUHm" name="unlocked.svg" compile="0" resource="1" file="Images/unlocked.svg"/>
+          <FILE id="CymZN5" name="locked.svg" compile="0" resource="1" file="Images/locked.svg"/>
           <FILE id="EdCQT8" name="algorithm_1.png" compile="0" resource="1" file="Images/algorithm_1.png"/>
           <FILE id="NUsrza" name="algorithm_2.png" compile="0" resource="1" file="Images/algorithm_2.png"/>
           <FILE id="KbgItp" name="algorithm_3.png" compile="0" resource="1" file="Images/algorithm_3.png"/>
@@ -90,8 +98,8 @@
         <FILE id="Ex0nPe" name="EnvComp.h" compile="0" resource="0" file="Source/GUI/EnvComp.h"/>
         <FILE id="RyL90K" name="Colors.h" compile="0" resource="0" file="Source/GUI/Colors.h"/>
         <FILE id="XnsOrQ" name="Colors.cpp" compile="1" resource="0" file="Source/GUI/Colors.cpp"/>
-        <FILE id="MsK9Ch" name="LFOComp.cpp" compile="1" resource="0" file="Source/GUI/LFOComp.cpp"/>
-        <FILE id="PCUPkB" name="LFOComp.h" compile="0" resource="0" file="Source/GUI/LFOComp.h"/>
+        <FILE id="MsK9Ch" name="AlgComp.cpp" compile="1" resource="0" file="Source/GUI/AlgComp.cpp"/>
+        <FILE id="PCUPkB" name="AlgComp.h" compile="0" resource="0" file="Source/GUI/AlgComp.h"/>
         <FILE id="Z2Dvd8" name="KeyboardComp.cpp" compile="1" resource="0"
               file="Source/GUI/KeyboardComp.cpp"/>
         <FILE id="TcRm2K" name="KeyboardComp.h" compile="0" resource="0" file="Source/GUI/KeyboardComp.h"/>

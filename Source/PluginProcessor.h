@@ -9,9 +9,10 @@
 #pragma once
 
 #include <JuceHeader.h>
-#include "Synth.h"
+#include "DSP/Synth.h"
 #include "DSP/Filters.h"
 #include "GUI/Scope.h"
+#include "PresetManager.h"
 //==============================================================================
 /**
 */
@@ -59,6 +60,8 @@ public:
     juce::AudioProcessorValueTreeState::ParameterLayout createAudioParameters();
     juce::AudioProcessorValueTreeState apvts {*this, nullptr, "Parameters", createAudioParameters()};
 	juce::AudioBuffer<float> getAudioData() { return lastBuffer; }
+    
+    PresetManager& getPresetManager() { return *presetManager; }
 private:
     juce::MidiKeyboardState keyboardState;
     void splitBufferByEvents(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages);
@@ -68,6 +71,7 @@ private:
 	std::unique_ptr<Filters> filter;
     Synth synth;
     std::unique_ptr<Scope> scope;
+    std::unique_ptr<PresetManager> presetManager;
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (OutsetAudioProcessor)
 };

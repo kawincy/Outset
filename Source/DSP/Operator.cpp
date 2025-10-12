@@ -23,6 +23,8 @@ Operator::Operator()
 	ratio = 1.f;
 	level = 0.5f;
 	tuning = 0.f;
+	ampValue = 1.f;
+	envValue = 1.f;
 	baseFrequency = 261.63f; // Middle C reference
 }
 
@@ -72,15 +74,6 @@ void Operator::resetCache() {
 	lastSample = 0.f; // important so feedback from a previous note doesn't affect the next
 	cachedSample = 0.f;
 }
-float Operator::getCachedSample()
-{
-	if (!cached)
-	{
-		cachedSample = getNextSample();
-		cached = true;
-	}
-	return cachedSample;
-}
 void Operator::setFrequency(float freq_)
 {
 	//freqSmooth.setTargetValue(freq_);
@@ -114,37 +107,66 @@ void Operator::resetRouting()
 	setFeedback(false);
 	setCarrier(false);
 }
-
-
-float Operator::getNextSample()
+float Operator::getCachedSample()
 {
-	float currentEnv = env.getNextSample();
-	float output = 0.f;
+	if (cached)
+		return cachedSample;
+
+	// Re-entrancy guard: cycle detection. If we re-enter while computing, fall back to previous sample (feedback style)
+	if (inProgress)
+		return lastSample;
+
+	inProgress = true;
+
+	// --- Gather modulation sum ---
 	float modSample = 0.f;
 	if (feedback)
-	{
-		modSample += lastSample * 0.25f; // scale feedback to prevent runaway & pitch shift
-	}
-	if (!modOperators.empty()) {
-		for (auto mod : modOperators)
-		{
-			if (mod != nullptr) {
-				modSample += mod->getCachedSample();
-			}
-		}
-	}
-	// --- FM deviation scaling (simple): deviation proportional to base freq ---
-	// Previous formula doubled baseFrequency every sample (base + base) causing octave shift.
-	constexpr float modulationIndex = 1.f; // TODO: expose as parameter
-	float deviation = modulationIndex * modSample * baseFrequency; // Hz deviation
-	float currentFreq = baseFrequency + deviation;
-	if (currentFreq < 0.f) currentFreq = 0.f;
-	setFrequency(currentFreq); // do FM
+		modSample += lastSample * 0.25f; // scaled feedback
 
-	ampSmooth.setTargetValue(osc.amplitude * level * currentEnv);
-	output = osc.nextSample() * ampSmooth.getNextValue();
-	lastSample = (output + lastSample) / 2.f; // This seeks to emulate the averaging filter of the DX7
-	return output;
+	for (auto* mod : modOperators)
+	{
+		if (mod != nullptr)
+			modSample += mod->getCachedSample();
+	}
+
+	// --- Advance envelope & amplitude smoothing once per sample ---
+	envValue = env.getNextSample();
+	ampSmooth.setTargetValue(osc.amplitude * level * envValue);
+	ampValue = ampSmooth.getNextValue();
+
+	// --- Apply modulation based on mode ---
+	float output = 0.f;
+
+	if (modulationType == ModulationType::FM)
+	{
+		// Frequency Modulation: modulate instantaneous frequency (Hz)
+		float deviation = modulationIndex * modSample * baseFrequency;
+		float currentFreq = baseFrequency + deviation;
+		if (currentFreq < 0.f) currentFreq = 0.f;
+		setFrequency(currentFreq);
+		output = osc.nextSample() * ampValue;
+	}
+	else // ModulationType::PM
+	{
+		// Phase Modulation (DX7-style): modulate phase angle directly
+		// Keep base frequency stable (only update on note/param changes)
+		setFrequency(baseFrequency);
+		// Scale modulator output to radians (modulationIndex controls depth)
+		float phaseOffsetRadians = modulationIndex * modSample;
+		output = osc.nextSample(phaseOffsetRadians) * ampValue;
+	}
+
+	cachedSample = output;
+	lastSample = 0.5f * (cachedSample + lastSample); // mild smoothing for feedback tone
+
+	cached = true;
+	inProgress = false;
+	return cachedSample;
+}
+float Operator::getNextSample()
+{
+	// Delegate to caching path so external code using getNextSample() still works
+	return getCachedSample();
 }
 
 void Operator::updateRatio(float ratio_)
