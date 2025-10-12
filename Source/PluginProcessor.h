@@ -9,7 +9,7 @@
 #pragma once
 
 #include <JuceHeader.h>
-#include "Synth.h"
+#include "DSP/Synth.h"
 #include "DSP/Filters.h"
 #include "GUI/Scope.h"
 #include "PresetManager.h"

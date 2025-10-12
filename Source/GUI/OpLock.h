@@ -82,9 +82,9 @@ private:
         std::unique_ptr<juce::Drawable> over(normal ? normal->createCopy() : nullptr);
         std::unique_ptr<juce::Drawable> down(normal ? normal->createCopy() : nullptr);
         if (over)
-            over->replaceColour(juce::Colours::white, juce::Colours::white.withAlpha(0.85f));
+            over->replaceColour(juce::Colours::white, juce::Colours::white.withAlpha(1.f));
         if (down)
-            down->replaceColour(juce::Colours::white, juce::Colours::white.withAlpha(0.65f));
+            down->replaceColour(juce::Colours::white, juce::Colours::white.withAlpha(1.f));
 
         button->setImages(normal,
                           over.get(),

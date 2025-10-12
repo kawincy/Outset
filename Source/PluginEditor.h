@@ -14,7 +14,7 @@
 #include "GUI/EnvComp.h"
 #include "GUI/FilterComp.h"
 #include "GUI/KeyboardComp.h"
-#include "GUI/LFOComp.h"
+#include "GUI/AlgComp.h"
 #include "GUI/OscComp.h"
 #include "GUI/OscEnvTab.h"
 #include "GUI/Scope.h"
@@ -40,7 +40,7 @@ private:
     //EnvComp env_comp;
     FilterComp filter_comp;
     KeyboardComp keyboard_comp;
-    LFOComp lfo_comp;
+    AlgComp alg_comp;
     //OscComp osc_comp;
 	OscEnvTab osc_env_tab;
 

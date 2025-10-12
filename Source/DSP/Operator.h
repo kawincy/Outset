@@ -9,7 +9,7 @@
 */
 
 #pragma once
-#include "DSP/Oscillator.h"
+#include "Oscillator.h"
 #include <JuceHeader.h>
 
 enum class ModulationType

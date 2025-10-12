@@ -1,7 +1,7 @@
 /*
   ==============================================================================
 
-    LFOComp.cpp
+    AlgComp.cpp
     Created: 2 Feb 2025 12:49:27pm
     Author:  josep
 
@@ -11,9 +11,9 @@
 #include <JuceHeader.h>
 
 #include "Colors.h"
-#include "LFOComp.h"
+#include "AlgComp.h"
 
-LFOComp::LFOComp(juce::AudioProcessorValueTreeState& apvtsRef) : apvtsRef(apvtsRef)
+AlgComp::AlgComp(juce::AudioProcessorValueTreeState& apvtsRef) : apvtsRef(apvtsRef)
 {
     // In your constructor, you should add any child components, and
     // initialise any special settings that your component needs.
@@ -94,11 +94,11 @@ LFOComp::LFOComp(juce::AudioProcessorValueTreeState& apvtsRef) : apvtsRef(apvtsR
    
 }
 
-LFOComp::~LFOComp()
+AlgComp::~AlgComp()
 {
 }
 
-void LFOComp::paint (juce::Graphics& g)
+void AlgComp::paint (juce::Graphics& g)
 {
     juce::Rectangle<int> bounds = getLocalBounds();
     g.fillAll(colors().bg);
@@ -130,7 +130,7 @@ void LFOComp::paint (juce::Graphics& g)
     }
 }
 
-void LFOComp::resized()
+void AlgComp::resized()
 {
     // This method is where you should set the bounds of any child
     // components that your component contains..
@@ -141,7 +141,7 @@ void LFOComp::resized()
     prev_b->setBounds(bounds.getWidth() / 3 - 20, bounds.getHeight() * 7 / 8 + 2, 18, 18);
 }
 
-void LFOComp::setAlgIndexParameter(int newValue)
+void AlgComp::setAlgIndexParameter(int newValue)
 {
 
     if (auto* param = apvtsRef.getParameter("ALG_INDEX"))

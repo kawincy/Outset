@@ -11,7 +11,7 @@
 
 //==============================================================================
 OutsetAudioProcessorEditor::OutsetAudioProcessorEditor (OutsetAudioProcessor& p, juce::MidiKeyboardState& ks )
-: AudioProcessorEditor (&p), audioProcessor (p), filter_comp(audioProcessor.apvts), keyboard_comp(ks), lfo_comp(audioProcessor.apvts), osc_env_tab(audioProcessor.apvts),
+: AudioProcessorEditor (&p), audioProcessor (p), filter_comp(audioProcessor.apvts), keyboard_comp(ks), alg_comp(audioProcessor.apvts), osc_env_tab(audioProcessor.apvts),
     presets_comp(audioProcessor.getPresetManager())
 {
     double ratio = 4.0 / 3.0;
@@ -22,7 +22,7 @@ OutsetAudioProcessorEditor::OutsetAudioProcessorEditor (OutsetAudioProcessor& p,
     //addAndMakeVisible(env_comp);
     addAndMakeVisible(filter_comp);
     addAndMakeVisible(keyboard_comp);
-    addAndMakeVisible(lfo_comp);
+    addAndMakeVisible(alg_comp);
     addAndMakeVisible(osc_env_tab);
 	setResizable(true, true);
     
@@ -59,7 +59,7 @@ void OutsetAudioProcessorEditor::resized()
     //env_comp.setBounds(0, height_half, width_half, height_3rd);
 
     // Bottom Half
-    lfo_comp.setBounds(width_half, height_6th, width_half, height_3rd);
+    alg_comp.setBounds(width_half, height_6th, width_half, height_3rd);
     filter_comp.setBounds(width_half, height_half, width_half, height_3rd);
     keyboard_comp.setBounds(0, height_6th * 5, getWidth(), height_6th);
 
