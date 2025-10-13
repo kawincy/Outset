@@ -9,6 +9,7 @@
 */
 
 #include "PresetPanel.h"
+#include "GUI/Colors.h"
 
 PresetPanel::PresetPanel(PresetManager& pm) : presetManager(pm)
 {
@@ -19,6 +20,8 @@ PresetPanel::PresetPanel(PresetManager& pm) : presetManager(pm)
     
     presetList.setTextWhenNothingSelected("None");
     presetList.setMouseCursor(juce::MouseCursor::PointingHandCursor);
+    presetList.setColour(juce::ComboBox::backgroundColourId, colors().bg);
+
     addAndMakeVisible(presetList);
     presetList.addListener(this);
     
@@ -52,6 +55,10 @@ void PresetPanel::configureButton(juce::Button& button, const juce::String& butt
 {
     button.setButtonText(buttonText);
     button.setMouseCursor(juce::MouseCursor::PointingHandCursor);
+    button.setColour(juce::TextButton::buttonColourId, colors().bg);
+    //need custom look and feel to change border color
+    
+    
     addAndMakeVisible(button);
     button.addListener(this);
 }
