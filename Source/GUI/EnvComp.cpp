@@ -222,14 +222,27 @@ EnvComp::DragMode EnvComp::detectHitRegion(juce::Point<int> pos, SustainHalf& su
         return DragMode::Release;
 }
 
-void EnvComp::updateFromDrag(juce::Point<int> pos)
+void EnvComp::onDragStart(juce::Point<int> startPos)
+{
+    currentDragMode = detectHitRegion(startPos, currentSustainHalf);
+    if (currentDragMode != DragMode::None)
+    {
+        // Store initial parameter values
+        dragStartAttack = attackSlider.getValue();
+        dragStartDecay = decaySlider.getValue();
+        dragStartSustain = sustainSlider.getValue();
+        dragStartRelease = releaseSlider.getValue();
+    }
+}
+
+void EnvComp::onDragUpdate(juce::Point<int> currentPos, juce::Point<int> deltaPos)
 {
     if (currentDragMode == DragMode::None)
         return;
     
-    // Calculate delta from initial drag position
-    float deltaX = pos.x - dragStartPos.x;
-    float deltaY = pos.y - dragStartPos.y;
+    // Use delta provided by base class
+    float deltaX = deltaPos.x;
+    float deltaY = deltaPos.y;
     
     // Sensitivity factors (pixels per second for time, pixels per unit for level)
     const float timeSensitivity = 0.01f; // 100 pixels = 1 second
@@ -263,8 +276,8 @@ void EnvComp::updateFromDrag(juce::Point<int> pos)
             }
             else
             {
-                // Right half: control release time
-                float newRelease = dragStartRelease + (deltaX * timeSensitivity);
+                // Right half: control release time (inverted like release region)
+                float newRelease = dragStartRelease - (deltaX * timeSensitivity);
                 newRelease = juce::jlimit(0.0f, 5.0f, newRelease);
                 releaseSlider.setValue(newRelease, juce::sendNotificationSync);
             }
@@ -284,32 +297,7 @@ void EnvComp::updateFromDrag(juce::Point<int> pos)
     }
 }
 
-void EnvComp::mouseDown(const juce::MouseEvent& event)
-{
-    currentDragMode = detectHitRegion(event.getPosition(), currentSustainHalf);
-    if (currentDragMode != DragMode::None)
-    {
-        // Store initial position and parameter values
-        dragStartPos = event.getPosition();
-        dragStartAttack = attackSlider.getValue();
-        dragStartDecay = decaySlider.getValue();
-        dragStartSustain = sustainSlider.getValue();
-        dragStartRelease = releaseSlider.getValue();
-        
-        setMouseCursor(juce::MouseCursor::DraggingHandCursor);
-    }
-}
-
-void EnvComp::mouseDrag(const juce::MouseEvent& event)
-{
-    if (currentDragMode != DragMode::None)
-    {
-        updateFromDrag(event.getPosition());
-    }
-}
-
-void EnvComp::mouseUp(const juce::MouseEvent& event)
+void EnvComp::onDragEnd(juce::Point<int> endPos)
 {
     currentDragMode = DragMode::None;
-    setMouseCursor(juce::MouseCursor::NormalCursor);
 }
