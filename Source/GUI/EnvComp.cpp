@@ -245,8 +245,8 @@ void EnvComp::onDragUpdate(juce::Point<int> currentPos, juce::Point<int> deltaPo
     float deltaY = deltaPos.y;
     
     // Sensitivity factors (pixels per second for time, pixels per unit for level)
-    const float timeSensitivity = 0.01f; // 100 pixels = 1 second
-    const float levelSensitivity = 0.002f; // 500 pixels = 1.0 level
+    const float timeSensitivity = 0.01f;
+    const float levelSensitivity = 0.008f;
     
     switch (currentDragMode)
     {
