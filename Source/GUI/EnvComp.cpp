@@ -67,7 +67,7 @@ void EnvComp::paint(juce::Graphics& g)
     auto bounds = getLocalBounds().reduced(14); // padding
     auto width = bounds.getWidth();
     auto height = bounds.getHeight() * 0.7;
-    auto graphBounds = bounds.withHeight(height);
+    graphBounds = bounds.withHeight(height); // Store for mouse interaction
 
     float attack = attackSlider.getValue();
     float decay = decaySlider.getValue();
@@ -99,6 +99,19 @@ void EnvComp::paint(juce::Graphics& g)
 
     g.setColour(colors().main);
     g.strokePath(adsrPath, juce::PathStrokeType(2.0f));
+    
+    // Draw control points as circles for visual feedback
+    g.setColour(colors().main.withAlpha(0.7f));
+    auto drawPoint = [&](float px, float py) {
+        g.fillEllipse(px - 4, py - 4, 8, 8);
+    };
+    
+    x = graphBounds.getX();
+    drawPoint(x + attackWidth, peakY); // Attack peak
+    x += attackWidth;
+    drawPoint(x + decayWidth, sustainY); // Decay end / sustain start
+    x += decayWidth + sustainWidth;
+    drawPoint(x, sustainY); // Sustain end / release start
     
     // Gradient
     juce::Path fillPath = adsrPath;
@@ -172,4 +185,131 @@ void EnvComp::setSliderBounds(juce::Slider& slider, juce::Label& label, juce::Re
 {
     slider.setBounds(bounds);
     label.setBounds(bounds.withWidth(20).translated(-20, 0));
+}
+
+EnvComp::DragMode EnvComp::detectHitRegion(juce::Point<int> pos, SustainHalf& sustainHalf)
+{
+    if (!graphBounds.contains(pos))
+        return DragMode::None;
+    
+    float attack = attackSlider.getValue();
+    float decay = decaySlider.getValue();
+    float release = releaseSlider.getValue();
+    
+    float totalTime = attack + decay + 2.0f + release;
+    float width = graphBounds.getWidth();
+    
+    float attackWidth = (attack / totalTime) * width;
+    float decayWidth = (decay / totalTime) * width;
+    float sustainWidth = (2.0f / totalTime) * width;
+    
+    float relX = pos.x - graphBounds.getX();
+    
+    // Determine which segment based on X position
+    if (relX < attackWidth)
+        return DragMode::Attack;
+    else if (relX < attackWidth + decayWidth)
+        return DragMode::Decay;
+    else if (relX < attackWidth + decayWidth + sustainWidth)
+    {
+        // Determine which half of sustain region
+        float sustainStartX = attackWidth + decayWidth;
+        float sustainMidX = sustainStartX + sustainWidth / 2.0f;
+        sustainHalf = (relX < sustainMidX) ? SustainHalf::Left : SustainHalf::Right;
+        return DragMode::Sustain;
+    }
+    else
+        return DragMode::Release;
+}
+
+void EnvComp::updateFromDrag(juce::Point<int> pos)
+{
+    if (currentDragMode == DragMode::None)
+        return;
+    
+    // Calculate delta from initial drag position
+    float deltaX = pos.x - dragStartPos.x;
+    float deltaY = pos.y - dragStartPos.y;
+    
+    // Sensitivity factors (pixels per second for time, pixels per unit for level)
+    const float timeSensitivity = 0.01f; // 100 pixels = 1 second
+    const float levelSensitivity = 0.002f; // 500 pixels = 1.0 level
+    
+    switch (currentDragMode)
+    {
+        case DragMode::Attack:
+        case DragMode::Decay:
+        {
+            // Attack and Decay regions: control attack time via horizontal drag
+            float newAttack = dragStartAttack + (deltaX * timeSensitivity);
+            newAttack = juce::jlimit(0.0f, 5.0f, newAttack);
+            attackSlider.setValue(newAttack, juce::sendNotificationSync);
+            break;
+        }
+        case DragMode::Sustain:
+        {
+            // Vertical: always controls sustain level
+            float newSustain = dragStartSustain - (deltaY * levelSensitivity); // Invert Y
+            newSustain = juce::jlimit(0.0f, 1.0f, newSustain);
+            sustainSlider.setValue(newSustain, juce::sendNotificationSync);
+            
+            // Horizontal: depends on which half of sustain we started in
+            if (currentSustainHalf == SustainHalf::Left)
+            {
+                // Left half: control decay time
+                float newDecay = dragStartDecay + (deltaX * timeSensitivity);
+                newDecay = juce::jlimit(0.0f, 5.0f, newDecay);
+                decaySlider.setValue(newDecay, juce::sendNotificationSync);
+            }
+            else
+            {
+                // Right half: control release time
+                float newRelease = dragStartRelease + (deltaX * timeSensitivity);
+                newRelease = juce::jlimit(0.0f, 5.0f, newRelease);
+                releaseSlider.setValue(newRelease, juce::sendNotificationSync);
+            }
+            break;
+        }
+        case DragMode::Release:
+        {
+            // Release region: control release time via horizontal drag
+            // Inverted: dragging right shortens release (steeper slope), left lengthens it
+            float newRelease = dragStartRelease - (deltaX * timeSensitivity);
+            newRelease = juce::jlimit(0.0f, 5.0f, newRelease);
+            releaseSlider.setValue(newRelease, juce::sendNotificationSync);
+            break;
+        }
+        default:
+            break;
+    }
+}
+
+void EnvComp::mouseDown(const juce::MouseEvent& event)
+{
+    currentDragMode = detectHitRegion(event.getPosition(), currentSustainHalf);
+    if (currentDragMode != DragMode::None)
+    {
+        // Store initial position and parameter values
+        dragStartPos = event.getPosition();
+        dragStartAttack = attackSlider.getValue();
+        dragStartDecay = decaySlider.getValue();
+        dragStartSustain = sustainSlider.getValue();
+        dragStartRelease = releaseSlider.getValue();
+        
+        setMouseCursor(juce::MouseCursor::DraggingHandCursor);
+    }
+}
+
+void EnvComp::mouseDrag(const juce::MouseEvent& event)
+{
+    if (currentDragMode != DragMode::None)
+    {
+        updateFromDrag(event.getPosition());
+    }
+}
+
+void EnvComp::mouseUp(const juce::MouseEvent& event)
+{
+    currentDragMode = DragMode::None;
+    setMouseCursor(juce::MouseCursor::NormalCursor);
 }

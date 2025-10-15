@@ -23,11 +23,29 @@ public:
 
     void paint(juce::Graphics&) override;
     void resized() override;
+    void mouseDown(const juce::MouseEvent& event) override;
+    void mouseDrag(const juce::MouseEvent& event) override;
+    void mouseUp(const juce::MouseEvent& event) override;
 
 private:
     void initializeSlider(juce::Slider& slider, const juce::String& name, double min, double max, double interval, double initialValue, bool skewed);
     void sliderValueChanged(juce::Slider* slider) override;
     void setSliderBounds(juce::Slider& slider, juce::Label& label, juce::Rectangle<int> bounds);
+    
+    enum class DragMode { None, Attack, Decay, Sustain, Release };
+    enum class SustainHalf { Left, Right }; // Which half of sustain region
+    
+    DragMode detectHitRegion(juce::Point<int> pos, SustainHalf& sustainHalf);
+    void updateFromDrag(juce::Point<int> pos);
+    
+    DragMode currentDragMode = DragMode::None;
+    SustainHalf currentSustainHalf = SustainHalf::Left;
+    juce::Point<int> dragStartPos; // Lock initial position
+    float dragStartAttack = 0.0f;
+    float dragStartDecay = 0.0f;
+    float dragStartSustain = 0.0f;
+    float dragStartRelease = 0.0f;
+    juce::Rectangle<int> graphBounds;
 public:
   // Accessors for current envelope values
   float getAttack()  const { return (float) attackSlider.getValue(); }
