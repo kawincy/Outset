@@ -34,7 +34,7 @@ resonanceAttachment(apvtsRef, "RESONANCE", resonanceSlider)
     addAndMakeVisible(cutoffSlider);
 
     // Configure resonance (Q) knob (range from 0.1 to 10, default 0.707 for Butterworth)
-    resonanceSlider.setRange(0.1, 10.0, 0.1);
+    resonanceSlider.setRange(0.1, 10.0, 0.01);
     resonanceSlider.setValue(0.707);
     addAndMakeVisible(resonanceSlider);
 
@@ -52,18 +52,18 @@ resonanceAttachment(apvtsRef, "RESONANCE", resonanceSlider)
 
 
     //for (auto* textbox : { &cutoffTextBox, &resonanceTextBox }) {
-        cutoffTextBox.setMultiLine(false);
-        cutoffTextBox.setReturnKeyStartsNewLine(false);
-        cutoffTextBox.setText(juce::String(cutoffSlider.getValue()), false);
-        cutoffTextBox.setJustification(juce::Justification::centredTop);
-        cutoffTextBox.applyFontToAllText(juce::Font(juce::FontOptions(12.0f, juce::Font::plain)));
-        cutoffTextBox.applyColourToAllText(colors().main);
-        resonanceTextBox.setMultiLine(false);
-        resonanceTextBox.setReturnKeyStartsNewLine(false);
-        resonanceTextBox.setText(juce::String(resonanceSlider.getValue()), false);
-        resonanceTextBox.setJustification(juce::Justification::centredTop);
-        resonanceTextBox.applyFontToAllText(juce::Font(juce::FontOptions(12.0f, juce::Font::plain)));
-        resonanceTextBox.applyColourToAllText(colors().main);
+    cutoffTextBox.setMultiLine(false);
+    cutoffTextBox.setReturnKeyStartsNewLine(false);
+    cutoffTextBox.setText(juce::String(cutoffSlider.getValue()), false);
+    cutoffTextBox.setJustification(juce::Justification::centredTop);
+    cutoffTextBox.applyFontToAllText(juce::Font(juce::FontOptions(12.0f, juce::Font::plain)));
+    cutoffTextBox.applyColourToAllText(colors().main);
+    resonanceTextBox.setMultiLine(false);
+    resonanceTextBox.setReturnKeyStartsNewLine(false);
+    resonanceTextBox.setText(juce::String(resonanceSlider.getValue()), false);
+    resonanceTextBox.setJustification(juce::Justification::centredTop);
+    resonanceTextBox.applyFontToAllText(juce::Font(juce::FontOptions(12.0f, juce::Font::plain)));
+    resonanceTextBox.applyColourToAllText(colors().main);
     //}
 
     // Cutoff text box setup
