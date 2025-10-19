@@ -34,7 +34,7 @@ resonanceAttachment(apvtsRef, "RESONANCE", resonanceSlider)
     addAndMakeVisible(cutoffSlider);
 
     // Configure resonance (Q) knob (range from 0.1 to 10, default 0.707 for Butterworth)
-    resonanceSlider.setRange(0.1, 10.0, 0.1);
+    resonanceSlider.setRange(0.1, 10.0, 0.01);
     resonanceSlider.setValue(0.707);
     addAndMakeVisible(resonanceSlider);
 
@@ -52,18 +52,18 @@ resonanceAttachment(apvtsRef, "RESONANCE", resonanceSlider)
 
 
     //for (auto* textbox : { &cutoffTextBox, &resonanceTextBox }) {
-        cutoffTextBox.setMultiLine(false);
-        cutoffTextBox.setReturnKeyStartsNewLine(false);
-        cutoffTextBox.setText(juce::String(cutoffSlider.getValue()), false);
-        cutoffTextBox.setJustification(juce::Justification::centredTop);
-        cutoffTextBox.applyFontToAllText(juce::Font(juce::FontOptions(12.0f, juce::Font::plain)));
-        cutoffTextBox.applyColourToAllText(colors().main);
-        resonanceTextBox.setMultiLine(false);
-        resonanceTextBox.setReturnKeyStartsNewLine(false);
-        resonanceTextBox.setText(juce::String(resonanceSlider.getValue()), false);
-        resonanceTextBox.setJustification(juce::Justification::centredTop);
-        resonanceTextBox.applyFontToAllText(juce::Font(juce::FontOptions(12.0f, juce::Font::plain)));
-        resonanceTextBox.applyColourToAllText(colors().main);
+    cutoffTextBox.setMultiLine(false);
+    cutoffTextBox.setReturnKeyStartsNewLine(false);
+    cutoffTextBox.setText(juce::String(cutoffSlider.getValue()), false);
+    cutoffTextBox.setJustification(juce::Justification::centredTop);
+    cutoffTextBox.applyFontToAllText(juce::Font(juce::FontOptions(12.0f, juce::Font::plain)));
+    cutoffTextBox.applyColourToAllText(colors().main);
+    resonanceTextBox.setMultiLine(false);
+    resonanceTextBox.setReturnKeyStartsNewLine(false);
+    resonanceTextBox.setText(juce::String(resonanceSlider.getValue()), false);
+    resonanceTextBox.setJustification(juce::Justification::centredTop);
+    resonanceTextBox.applyFontToAllText(juce::Font(juce::FontOptions(12.0f, juce::Font::plain)));
+    resonanceTextBox.applyColourToAllText(colors().main);
     //}
 
     // Cutoff text box setup
@@ -106,7 +106,8 @@ void FilterComp::paint(juce::Graphics& g)
 
     auto bounds = getLocalBounds().reduced(14); // padding
     auto height = bounds.getHeight() * 0.7;
-    auto drawArea = bounds.withHeight(height);
+    graphBounds = bounds.withHeight(height); // Store for mouse interaction
+    auto drawArea = graphBounds;
 
 
     g.setColour(juce::Colours::white.withAlpha(0.2f));
@@ -241,6 +242,30 @@ void FilterComp::paint(juce::Graphics& g)
     g.setColour(colors().main);
     g.strokePath(responseCurve, juce::PathStrokeType(2.0f));
 
+    // Draw control point at cutoff frequency (reuse existing variables)
+    float normCutoff = std::log(cutoff / minFreq) / std::log(maxFreq / minFreq);
+    float controlX = drawArea.getX() + normCutoff * drawArea.getWidth();
+    
+    // Calculate magnitude at cutoff frequency for Y position
+    float omega = 2.0f * juce::MathConstants<float>::pi * cutoff / sampleRate;
+    std::complex<float> expNegjOmega = std::exp(std::complex<float>(0, -omega));
+    std::complex<float> expNegj2Omega = std::exp(std::complex<float>(0, -2 * omega));
+    std::complex<float> numerator = a0 + a1 * expNegjOmega + a2 * expNegj2Omega;
+    std::complex<float> denominator = std::complex<float>(1, 0) + b1 * expNegjOmega + b2 * expNegj2Omega;
+    float magnitude = std::abs(numerator / denominator);
+    float dB = juce::Decibels::gainToDecibels(magnitude);
+    float clampedDb = juce::jlimit(minDecibels, maxDecibels, dB);
+    float controlY = juce::jmap(clampedDb, maxDecibels, minDecibels,
+                                (float)drawArea.getY(), (float)drawArea.getBottom());
+    
+    // Draw control point circle
+    g.setColour(colors().main.withAlpha(0.7f));
+    g.fillEllipse(controlX - 5, controlY - 5, 10, 10);
+    
+    // Draw a subtle outline
+    g.setColour(colors().white.withAlpha(0.5f));
+    g.drawEllipse(controlX - 5, controlY - 5, 10, 10, 1.5f);
+
     juce::Path fillPath = responseCurve;
     fillPath.lineTo(drawArea.getRight(), drawArea.getBottom());
     fillPath.lineTo(drawArea.getX(), drawArea.getBottom());
@@ -299,4 +324,34 @@ void FilterComp::sliderValueChanged(juce::Slider* slider)
         resonanceTextBox.setText(juce::String(slider->getValue()), false);
     }
     repaint();
+}
+
+void FilterComp::onDragStart(juce::Point<int> startPos)
+{
+    // Store initial parameter values
+    dragStartCutoff = cutoffSlider.getValue();
+    dragStartResonance = resonanceSlider.getValue();
+}
+
+void FilterComp::onDragUpdate(juce::Point<int> currentPos, juce::Point<int> deltaPos)
+{
+    // Horizontal: frequency (logarithmic/exponential scale)
+    // Moving right increases frequency, left decreases it
+    const float freqSensitivity = 0.025f; // pixels to octaves (adjust for feel)
+    float newCutoff = dragStartCutoff * std::pow(2.0f, deltaPos.x * freqSensitivity);
+    newCutoff = juce::jlimit(20.0f, 20000.0f, newCutoff);
+    cutoffSlider.setValue(newCutoff, juce::sendNotificationSync);
+    
+    // Vertical: Q factor (resonance)
+    // Moving down (positive Y) increases Q (sharper peak)
+    // Moving up (negative Y) decreases Q (broader peak)
+    const float qSensitivity = 0.02f; // pixels per Q unit
+    float newQ = dragStartResonance - (deltaPos.y * qSensitivity);
+    newQ = juce::jlimit(0.1f, 10.0f, newQ);
+    resonanceSlider.setValue(newQ, juce::sendNotificationSync);
+}
+
+void FilterComp::onDragEnd(juce::Point<int> endPos)
+{
+    // Optional: could add snapping, automation recording, etc.
 }

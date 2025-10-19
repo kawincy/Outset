@@ -11,11 +11,12 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "DraggableGraph.h"
 
 //==============================================================================
 /*
 */
-class EnvComp : public juce::Component, private juce::Slider::Listener
+class EnvComp : public DraggableGraph, private juce::Slider::Listener
 {
 public:
     EnvComp(int num, juce::AudioProcessorValueTreeState& apvtsRef);
@@ -24,10 +25,29 @@ public:
     void paint(juce::Graphics&) override;
     void resized() override;
 
+protected:
+    // DraggableGraph overrides
+    void onDragStart(juce::Point<int> startPos) override;
+    void onDragUpdate(juce::Point<int> currentPos, juce::Point<int> deltaPos) override;
+    void onDragEnd(juce::Point<int> endPos) override;
+
 private:
     void initializeSlider(juce::Slider& slider, const juce::String& name, double min, double max, double interval, double initialValue, bool skewed);
     void sliderValueChanged(juce::Slider* slider) override;
     void setSliderBounds(juce::Slider& slider, juce::Label& label, juce::Rectangle<int> bounds);
+    
+    enum class DragMode { None, Attack, Decay, Sustain, Release };
+    enum class SustainHalf { Left, Right }; // Which half of sustain region
+    
+    DragMode detectHitRegion(juce::Point<int> pos, SustainHalf& sustainHalf);
+    
+    DragMode currentDragMode = DragMode::None;
+    SustainHalf currentSustainHalf = SustainHalf::Left;
+    float dragStartAttack = 0.0f;
+    float dragStartDecay = 0.0f;
+    float dragStartSustain = 0.0f;
+    float dragStartRelease = 0.0f;
+    
 public:
   // Accessors for current envelope values
   float getAttack()  const { return (float) attackSlider.getValue(); }
