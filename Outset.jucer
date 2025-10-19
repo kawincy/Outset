@@ -23,6 +23,8 @@
         <FILE id="okJXF8" name="VoiceHandler.h" compile="0" resource="0" file="Source/DSP/VoiceHandler.h"/>
       </GROUP>
       <GROUP id="{D000975A-FD13-24BE-CFE2-76B8EFA2C9CE}" name="GUI">
+        <FILE id="OtDB7u" name="DraggableGraph.h" compile="0" resource="0"
+              file="Source/GUI/DraggableGraph.h"/>
         <FILE id="X4d4vu" name="PresetPanel.cpp" compile="1" resource="0" file="Source/GUI/PresetPanel.cpp"/>
         <FILE id="FbjxQl" name="PresetPanel.h" compile="0" resource="0" file="Source/GUI/PresetPanel.h"/>
         <FILE id="koj5Gp" name="OpLock.h" compile="0" resource="0" file="Source/GUI/OpLock.h"/>
