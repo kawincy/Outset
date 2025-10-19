@@ -12,6 +12,7 @@
 #include "DSP/Synth.h"
 #include "DSP/Filters.h"
 #include "GUI/Scope.h"
+#include "GUI/rta.h"
 #include "PresetManager.h"
 //==============================================================================
 /**
@@ -60,6 +61,7 @@ public:
     juce::AudioProcessorValueTreeState::ParameterLayout createAudioParameters();
     juce::AudioProcessorValueTreeState apvts {*this, nullptr, "Parameters", createAudioParameters()};
 	juce::AudioBuffer<float> getAudioData() { return lastBuffer; }
+  RTA& getRTA() { return rta; }
     
     PresetManager& getPresetManager() { return *presetManager; }
 private:
@@ -72,6 +74,7 @@ private:
     Synth synth;
     std::unique_ptr<Scope> scope;
     std::unique_ptr<PresetManager> presetManager;
+  RTA rta; // real-time analyzer
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (OutsetAudioProcessor)
 };

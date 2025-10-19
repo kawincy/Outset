@@ -12,7 +12,7 @@
 #include "FilterComp.h"
 #include "Colors.h"
 
-FilterComp::FilterComp(juce::AudioProcessorValueTreeState& apvtsRef) : apvtsRef(apvtsRef),
+FilterComp::FilterComp(juce::AudioProcessorValueTreeState& apvtsRef, RTA& rtaRef) : apvtsRef(apvtsRef), rta(rtaRef),
 cutoffAttachment(apvtsRef, "CUTOFF", cutoffSlider),
 resonanceAttachment(apvtsRef, "RESONANCE", resonanceSlider)
 {
@@ -89,6 +89,7 @@ resonanceAttachment(apvtsRef, "RESONANCE", resonanceSlider)
     };
     addAndMakeVisible(resonanceTextBox);
 
+    startTimerHz(30); // refresh analyzer ~30 FPS
 }
 
 FilterComp::~FilterComp()
@@ -238,6 +239,59 @@ void FilterComp::paint(juce::Graphics& g)
         }
     }
 
+    // Draw spectrum (real-time analyzer) beneath response curve
+    spectrumCache.clear();
+    rta.copySmoothedSpectrum(spectrumCache);
+    if (!spectrumCache.empty())
+    {
+        juce::Path spectrumPath;
+        const int bins = (int)spectrumCache.size();
+        const float rtaSampleRate = (float)rta.getSampleRate();
+        const float nyquist = rtaSampleRate * 0.5f;
+        auto dbTop = 20.0f;
+        auto dbBottom = -80.0f;
+        
+        for (int x = 0; x < drawArea.getWidth(); ++x)
+        {
+            float normX = (float)x / (float)juce::jmax(1, drawArea.getWidth() - 1);
+            
+            // Map pixel to frequency (logarithmic, same as filter response)
+            // match the filter response frequency mapping exactly
+            float freq = minFreq * std::pow(maxFreq / minFreq, normX);
+            
+            // FFT bins are LINEAR in frequency space
+            // bin 0 = DC (0 Hz), bin[bins-1] = Nyquist
+            // freq_of_bin_i = (i / bins) * nyquist
+            // Therefore: bin_index = (freq / nyquist) * bins
+            float binFloat = (freq / nyquist) * (float)bins;
+            
+            // Linear interpolation between adjacent bins to smooth out stairstepping
+            int bin0 = (int)juce::jlimit(0, bins - 1, (int)std::floor(binFloat));
+            int bin1 = (int)juce::jlimit(0, bins - 1, bin0 + 1);
+            float frac = binFloat - (float)bin0; // fractional part for interpolation
+            
+            // Interpolate dB values (linear in dB space is perceptually smooth)
+            float dB0 = spectrumCache[(size_t)bin0];
+            float dB1 = spectrumCache[(size_t)bin1];
+            float dB = dB0 + frac * (dB1 - dB0); // linear interpolation
+            
+            dB = juce::jlimit(dbBottom, dbTop, dB);
+            float y = juce::jmap(dB, dbTop, dbBottom, (float)drawArea.getY(), (float)drawArea.getBottom());
+            float px = (float)drawArea.getX() + (float)x;
+            if (x == 0) spectrumPath.startNewSubPath(px, y); else spectrumPath.lineTo(px, y);
+        }
+        // Fill area under spectrum
+        juce::Path spectrumFill = spectrumPath;
+        spectrumFill.lineTo(drawArea.getRight(), drawArea.getBottom());
+        spectrumFill.lineTo(drawArea.getX(), drawArea.getBottom());
+        spectrumFill.closeSubPath();
+
+        g.setColour(juce::Colours::cyan.withAlpha(0.2f));
+        g.fillPath(spectrumFill);
+        g.setColour(juce::Colours::cyan.withAlpha(0.6f));
+        g.strokePath(spectrumPath, juce::PathStrokeType(1.0f));
+    }
+
     // Draw the frequency response curve in yellow
     g.setColour(colors().main);
     g.strokePath(responseCurve, juce::PathStrokeType(2.0f));
@@ -337,7 +391,7 @@ void FilterComp::onDragUpdate(juce::Point<int> currentPos, juce::Point<int> delt
 {
     // Horizontal: frequency (logarithmic/exponential scale)
     // Moving right increases frequency, left decreases it
-    const float freqSensitivity = 0.025f; // pixels to octaves (adjust for feel)
+    const float freqSensitivity = 0.02f; // pixels to octaves (adjust for feel)
     float newCutoff = dragStartCutoff * std::pow(2.0f, deltaPos.x * freqSensitivity);
     newCutoff = juce::jlimit(20.0f, 20000.0f, newCutoff);
     cutoffSlider.setValue(newCutoff, juce::sendNotificationSync);
@@ -345,8 +399,8 @@ void FilterComp::onDragUpdate(juce::Point<int> currentPos, juce::Point<int> delt
     // Vertical: Q factor (resonance)
     // Moving down (positive Y) increases Q (sharper peak)
     // Moving up (negative Y) decreases Q (broader peak)
-    const float qSensitivity = 0.02f; // pixels per Q unit
-    float newQ = dragStartResonance - (deltaPos.y * qSensitivity);
+    const float qSensitivity = 0.01f; // pixels per Q unit
+    float newQ = dragStartResonance - (deltaPos.y * qSensitivity); // up decreases, down increases
     newQ = juce::jlimit(0.1f, 10.0f, newQ);
     resonanceSlider.setValue(newQ, juce::sendNotificationSync);
 }

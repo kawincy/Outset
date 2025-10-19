@@ -11,13 +11,16 @@
 
 //==============================================================================
 OutsetAudioProcessorEditor::OutsetAudioProcessorEditor (OutsetAudioProcessor& p, juce::MidiKeyboardState& ks )
-: AudioProcessorEditor (&p), audioProcessor (p), filter_comp(audioProcessor.apvts), keyboard_comp(ks), alg_comp(audioProcessor.apvts), osc_env_tab(audioProcessor.apvts),
+: AudioProcessorEditor (&p), audioProcessor (p), filter_comp(audioProcessor.apvts, audioProcessor.getRTA()), keyboard_comp(ks), alg_comp(audioProcessor.apvts), osc_env_tab(audioProcessor.apvts),
     presets_comp(audioProcessor.getPresetManager())
 {
     double ratio = 4.0 / 3.0;
     setResizeLimits(400, 400 / ratio, 1200, 1200 / ratio);
     getConstrainer()->setFixedAspectRatio(ratio);
     setSize(800.0, 800.0 / ratio);
+    // Sync filter graph sample rate to processor
+    filter_comp.setSampleRate(audioProcessor.getSampleRate());
+
     addAndMakeVisible(presets_comp);
     //addAndMakeVisible(env_comp);
     addAndMakeVisible(filter_comp);
