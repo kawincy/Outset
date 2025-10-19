@@ -10,6 +10,7 @@
 
 #pragma once
 #include "Oscillator.h"
+#include "Envelope.h"
 #include <JuceHeader.h>
 
 enum class ModulationType
@@ -51,7 +52,7 @@ public:
 	void setModulationIndex(float index) { modulationIndex = index; }
 	float getModulationIndex() const { return modulationIndex; }
 	Oscillator osc;
-	juce::ADSR env;
+	CustomADSR env;
 	void setCached() { cached = true; }
 private:
 	bool feedback = false; // feedback operator assignment
