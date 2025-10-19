@@ -11,7 +11,7 @@
 #pragma once
 
 #include <JuceHeader.h>
-#include "../PresetPanel.h"
+#include "PresetPanel.h"
 
 //==============================================================================
 /*
