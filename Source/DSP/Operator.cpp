@@ -87,7 +87,12 @@ void Operator::updateEnvParams(float attack, float decay, float sustain, float r
 	//DBG("decay: " << decay);
 	//DBG("sustain: " << sustain);
 	//DBG("Release: " << release);
-	env.setParameters({ attack, decay, sustain, release });
+	CustomADSR::Parameters params;
+	params.attack = attack;
+	params.decay = decay;
+	params.sustain = sustain;
+	params.release = release;
+	env.setParameters(params);
 }
 
 void Operator::setLevel(float level_)

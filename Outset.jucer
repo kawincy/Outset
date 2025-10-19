@@ -10,6 +10,7 @@
       <FILE id="cmiLiq" name="PresetManager.h" compile="0" resource="0" file="Source/PresetManager.h"/>
       <GROUP id="{B02D3D08-A9D3-894C-D0E2-70D7EDCB3FA2}" name="DSP">
         <FILE id="FUG3g9" name="AlgSpace.h" compile="0" resource="0" file="Source/DSP/AlgSpace.h"/>
+        <FILE id="fhFcid" name="Envelope.h" compile="0" resource="0" file="Source/DSP/Envelope.h"/>
         <FILE id="vspn2h" name="Filters.cpp" compile="1" resource="0" file="Source/DSP/Filters.cpp"/>
         <FILE id="ypU5MK" name="Filters.h" compile="0" resource="0" file="Source/DSP/Filters.h"/>
         <FILE id="oEqigw" name="NoiseGenerator.h" compile="0" resource="0"
