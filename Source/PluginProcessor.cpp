@@ -107,6 +107,7 @@ void OutsetAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock
     spec.numChannels = 2;
     filter->prepare(spec);
     synth.allocateResources(sampleRate, samplesPerBlock);
+    rta.setSampleRate(sampleRate);
     reset();
 }
 
@@ -198,6 +199,13 @@ void OutsetAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce:
     keyboardState.processNextMidiBuffer(midiMessages, 0, buffer.getNumSamples(), true);
     splitBufferByEvents(buffer, midiMessages);
     filter->processBlock(buffer);
+    // Feed RTA at end of processing (post-filter output)
+    {
+        const float* chans[2] = { nullptr, nullptr };
+        for (int ch = 0; ch < juce::jmin(2, buffer.getNumChannels()); ++ch)
+            chans[ch] = buffer.getReadPointer(ch);
+        rta.pushAudioBuffer(chans, buffer.getNumChannels(), buffer.getNumSamples());
+    }
     
 	scope->setAudioData(buffer);
     
