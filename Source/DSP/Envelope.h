@@ -1,7 +1,7 @@
 /*
   ==============================================================================
 
-    CustomADSR.h
+    Envelope.h
     Created: 19 Oct 2025
     Author:  ryanb
 
@@ -19,7 +19,7 @@
 
 #include <JuceHeader.h>
 
-class CustomADSR
+class Envelope
 {
 public:
     struct Parameters
@@ -39,7 +39,7 @@ public:
         Release
     };
 
-    CustomADSR() = default;
+    Envelope() = default;
 
     void setSampleRate(double newSampleRate) noexcept
     {

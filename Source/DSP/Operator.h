@@ -52,7 +52,7 @@ public:
 	void setModulationIndex(float index) { modulationIndex = index; }
 	float getModulationIndex() const { return modulationIndex; }
 	Oscillator osc;
-	CustomADSR env;
+	Envelope env;
 	void setCached() { cached = true; }
 private:
 	bool feedback = false; // feedback operator assignment
