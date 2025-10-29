@@ -10,7 +10,7 @@
 
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
-#include "GUI/PresetsComp.h"
+#include "GUI/HeaderComp.h"
 #include "GUI/EnvComp.h"
 #include "GUI/FilterComp.h"
 #include "GUI/KeyboardComp.h"
@@ -36,7 +36,7 @@ private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
     OutsetAudioProcessor& audioProcessor;
-    PresetsComp presets_comp;
+    HeaderComp presets_comp;
     //EnvComp env_comp;
     FilterComp filter_comp;
     KeyboardComp keyboard_comp;

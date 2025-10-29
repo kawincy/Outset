@@ -1,7 +1,7 @@
 /*
   ==============================================================================
 
-    PresetsComp.h
+    HeaderComp.h
     Created: 2 Feb 2025 12:37:21pm
     Author:  josep
 
@@ -16,16 +16,20 @@
 //==============================================================================
 /*
 */
-class PresetsComp  : public juce::Component
+class HeaderComp  : public juce::Component
 {
 public:
-    PresetsComp(PresetManager&);
-    ~PresetsComp() override;
+    HeaderComp(PresetManager&);
+    ~HeaderComp() override;
 
     void paint (juce::Graphics&) override;
     void resized() override;
 
 private:
     PresetPanel presetPanel;
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PresetsComp)
+    juce::TextButton fxButton;
+    
+    void showFXPopup();
+    
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (HeaderComp)
 };

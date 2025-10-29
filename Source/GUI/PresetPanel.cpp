@@ -9,7 +9,7 @@
 */
 
 #include "PresetPanel.h"
-#include "GUI/Colors.h"
+#include "Colors.h"
 
 PresetPanel::PresetPanel(PresetManager& pm) : presetManager(pm)
 {
