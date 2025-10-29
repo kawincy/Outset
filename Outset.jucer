@@ -90,8 +90,8 @@
           <FILE id="g0H0xs" name="algorithm_32.png" compile="0" resource="1"
                 file="Images/algorithm_32.png"/>
         </GROUP>
-        <FILE id="fJU4Vc" name="PresetsComp.cpp" compile="1" resource="0" file="Source/GUI/PresetsComp.cpp"/>
-        <FILE id="r4RiQs" name="PresetsComp.h" compile="0" resource="0" file="Source/GUI/PresetsComp.h"/>
+        <FILE id="fJU4Vc" name="HeaderComp.cpp" compile="1" resource="0" file="Source/GUI/HeaderComp.cpp"/>
+        <FILE id="r4RiQs" name="HeaderComp.h" compile="0" resource="0" file="Source/GUI/HeaderComp.h"/>
         <FILE id="bk5l5h" name="FilterComp.cpp" compile="1" resource="0" file="Source/GUI/FilterComp.cpp"/>
         <FILE id="HyxEHZ" name="FilterComp.h" compile="0" resource="0" file="Source/GUI/FilterComp.h"/>
         <FILE id="daBOM6" name="OscEnvTab.h" compile="0" resource="0" file="Source/GUI/OscEnvTab.h"/>

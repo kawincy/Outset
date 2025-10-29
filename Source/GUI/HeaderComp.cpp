@@ -1,7 +1,7 @@
 /*
   ==============================================================================
 
-    PresetsComp.cpp
+    HeaderComp.cpp
     Created: 2 Feb 2025 12:37:21pm
     Author:  josep
 
@@ -11,10 +11,10 @@
 #include <JuceHeader.h>
 
 #include "Colors.h"
-#include "PresetsComp.h"
+#include "HeaderComp.h"
 
 //==============================================================================
-PresetsComp::PresetsComp(PresetManager& pm) :
+HeaderComp::HeaderComp(PresetManager& pm) :
     presetPanel(pm)
 {
     // In your constructor, you should add any child components, and
@@ -22,11 +22,11 @@ PresetsComp::PresetsComp(PresetManager& pm) :
     addAndMakeVisible(presetPanel);
 }
 
-PresetsComp::~PresetsComp()
+HeaderComp::~HeaderComp()
 {
 }
 
-void PresetsComp::paint (juce::Graphics& g)
+void HeaderComp::paint (juce::Graphics& g)
 {
     g.fillAll(colors().bg);
 
@@ -35,7 +35,7 @@ void PresetsComp::paint (juce::Graphics& g)
     g.drawText("Presets", getLocalBounds(), juce::Justification::centred, true);
 }
 
-void PresetsComp::resized()
+void HeaderComp::resized()
 {
     presetPanel.setBounds(getBounds());
 }
