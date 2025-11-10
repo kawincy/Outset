@@ -69,7 +69,7 @@ void Synth::updateAlgorithm(int algIndex_)
 {
     voiceHandler.updateAlgorithm(algIndex_);
 }
-void Synth::updateOsc(float fine, float coarse, float level, float ratio, int index)
+void Synth::updateOsc(float fine, float coarse, float level, float ratio, float modIndex, int index)
 {
     // In a polyphonic setting, apply oscillator adjustments
     // to the operator with the specified index for all voices.
@@ -80,9 +80,10 @@ void Synth::updateOsc(float fine, float coarse, float level, float ratio, int in
     {
         // Adjust the operator parameters in each voice.
         // (It is assumed that each Voice contains an array of operators called op.)
-		voice.op[index].updateTuning(fine, coarse);
+        voice.op[index].updateTuning(fine, coarse);
         voice.op[index].updateRatio(ratio);
         voice.op[index].updateLevel(level);
+        voice.op[index].setModulationIndex(modIndex);
     }
 }
 

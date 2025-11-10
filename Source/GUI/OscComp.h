@@ -38,16 +38,19 @@ private:
     juce::Slider oscFineSlider;
     juce::Slider oscCoarseSlider;
     juce::Slider oscRatioSlider;
+    juce::Slider oscModIndexSlider;
 
     juce::AudioProcessorValueTreeState::SliderAttachment levelAttachment;
     juce::AudioProcessorValueTreeState::SliderAttachment fineAttachment;
     juce::AudioProcessorValueTreeState::SliderAttachment coarseAttachment;
     juce::AudioProcessorValueTreeState::SliderAttachment ratioAttachment;
+    juce::AudioProcessorValueTreeState::SliderAttachment modIndexAttachment;
 
     juce::Label oscLevelLabel;
     juce::Label oscFineLabel;
     juce::Label oscCoarseLabel;
     juce::Label oscRatioLabel;
+    juce::Label oscModIndexLabel;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(OscComp)
 };

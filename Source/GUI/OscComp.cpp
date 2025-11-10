@@ -18,7 +18,8 @@ OscComp::OscComp(int num, juce::AudioProcessorValueTreeState& apvtsRef)
       levelAttachment(apvtsRef, "LEVEL_" + std::to_string(oscNum), oscLevelSlider),
       fineAttachment(apvtsRef, "FINE_" + std::to_string(oscNum), oscFineSlider),
       coarseAttachment(apvtsRef, "COARSE_" + std::to_string(oscNum), oscCoarseSlider),
-	  ratioAttachment(apvtsRef, "RATIO_" + std::to_string(oscNum), oscRatioSlider)
+	  ratioAttachment(apvtsRef, "RATIO_" + std::to_string(oscNum), oscRatioSlider),
+      modIndexAttachment(apvtsRef, "MOD_INDEX_" + std::to_string(oscNum), oscModIndexSlider)
       
 {
 	
@@ -27,15 +28,19 @@ OscComp::OscComp(int num, juce::AudioProcessorValueTreeState& apvtsRef)
     initializeSlider(oscFineSlider, oscFineLabel, "Fine", juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag, 0.0);
     initializeSlider(oscCoarseSlider, oscCoarseLabel, "Coarse", juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag, 0.0);
     initializeSlider(oscRatioSlider, oscRatioLabel, "Ratio", juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag, 1.0, 1.0);
+    initializeSlider(oscModIndexSlider, oscModIndexLabel, "Mod", juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag, 100.0);
 
-    for (auto* slider : {&oscLevelSlider, &oscFineSlider, &oscCoarseSlider, &oscRatioSlider})
+    // Set sensible range for the modulation index slider to match APVTS
+    oscModIndexSlider.setRange(0.0, 500.0, 0.1);
+    oscModIndexSlider.setSkewFactorFromMidPoint(100.f);
+    for (auto* slider : {&oscLevelSlider, &oscFineSlider, &oscCoarseSlider, &oscRatioSlider, &oscModIndexSlider})
     {
         slider->setColour(juce::Slider::rotarySliderFillColourId, colors().main);
         slider->setColour(juce::Slider::rotarySliderOutlineColourId, colors().accent);
         slider->setColour(juce::Slider::thumbColourId, colors().white);
     }
     
-    for (auto* label : {&oscLevelLabel, &oscFineLabel, &oscCoarseLabel, &oscRatioLabel})
+    for (auto* label : {&oscLevelLabel, &oscFineLabel, &oscCoarseLabel, &oscRatioLabel, &oscModIndexLabel})
     {
         label->setFont(juce::Font(juce::FontOptions(14.0f, juce::Font::bold)));
         label->setColour(juce::Label::textColourId, colors().main);
@@ -109,7 +114,7 @@ void OscComp::paint(juce::Graphics& g)
     // lambda for printing the vals
     auto floatValueStr = [](float value) { return juce::String(value, 2); };
     auto intValueStr = [](int value) { return juce::String(value); };
-	int valYOffset = oscLevelSlider.getBounds().getWidth() / -2;
+    int valYOffset = oscLevelSlider.getBounds().getWidth() / -2;
     g.drawText(floatValueStr(oscLevelSlider.getValue()),
               oscLevelSlider.getBounds().translated(0, valYOffset),
               juce::Justification::centred);
@@ -128,6 +133,11 @@ void OscComp::paint(juce::Graphics& g)
         g.drawText(floatValueStr(ratioVal),
             oscRatioSlider.getBounds().translated(0, valYOffset),
             juce::Justification::centred);
+
+    // modulation index value (show as integer)
+    g.drawText(intValueStr(int(oscModIndexSlider.getValue())),
+        oscModIndexSlider.getBounds().translated(0, valYOffset),
+        juce::Justification::centred);
 }
 
 void OscComp::resized()
@@ -140,7 +150,7 @@ void OscComp::resized()
     
     // bottom half is sliders
     auto sliderArea = bounds;
-    auto sliderWidth = sliderArea.getWidth() / 4;
+    auto sliderWidth = sliderArea.getWidth() / 5;
     
     auto knobSize = juce::jmin(sliderWidth * 0.6f, 45.f);
     
@@ -148,12 +158,14 @@ void OscComp::resized()
     auto levelArea = sliderArea.removeFromLeft(sliderWidth);
     auto fineArea = sliderArea.removeFromLeft(sliderWidth);
 	auto coarseArea = sliderArea.removeFromLeft(sliderWidth);
-    auto ratioArea = sliderArea;
+    auto ratioArea = sliderArea.removeFromLeft(sliderWidth);
+    auto modArea = sliderArea;
     
     oscLevelSlider.setBounds(levelArea.withSizeKeepingCentre(knobSize, knobSize));
     oscFineSlider.setBounds(fineArea.withSizeKeepingCentre(knobSize, knobSize));
     oscCoarseSlider.setBounds(coarseArea.withSizeKeepingCentre(knobSize, knobSize));
     oscRatioSlider.setBounds(ratioArea.withSizeKeepingCentre(knobSize, knobSize));
+    oscModIndexSlider.setBounds(modArea.withSizeKeepingCentre(knobSize, knobSize));
     
     // labels below sliders
     // labels below sliders
@@ -179,6 +191,11 @@ void OscComp::resized()
     oscRatioLabel.setBounds(oscRatioSlider.getX() - labelExtraWidth / 2,
         oscRatioSlider.getBottom() - labelYOffset,
         oscRatioSlider.getWidth() + labelExtraWidth,
+        labelHeight);
+
+    oscModIndexLabel.setBounds(oscModIndexSlider.getX() - labelExtraWidth / 2,
+        oscModIndexSlider.getBottom() - labelYOffset,
+        oscModIndexSlider.getWidth() + labelExtraWidth,
         labelHeight);
 }
 

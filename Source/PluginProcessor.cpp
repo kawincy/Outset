@@ -189,6 +189,7 @@ void OutsetAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce:
                         apvts.getRawParameterValue("COARSE_" + juce::String(i + 1))->load(),
                         apvts.getRawParameterValue("LEVEL_" + juce::String(i + 1))->load(),
                         apvts.getRawParameterValue("RATIO_" + juce::String(i + 1))->load(),
+                        apvts.getRawParameterValue("MOD_INDEX_" + juce::String(i + 1))->load(),
                         i);
         synth.updateADSR(apvts.getRawParameterValue("ATTACK_" + juce::String(i + 1))->load(), 
                          apvts.getRawParameterValue("DECAY_" + juce::String(i + 1))->load(),
@@ -373,6 +374,16 @@ juce::AudioProcessorValueTreeState::ParameterLayout OutsetAudioProcessor::create
             juce::ParameterID("RATIO_" + juce::String(i), 1),
             "Ratio" + juce::String(i),
             ratioRange,
+            1.0f));
+    }
+    // Modulation Index Parameters (6)
+    juce::NormalisableRange<float> modRange(0.0f, 500.0f, 0.1f);
+    for (int i = 1; i <= 6; ++i)
+    {
+        layout.add(std::make_unique<juce::AudioParameterFloat>(
+            juce::ParameterID("MOD_INDEX_" + juce::String(i), 1),
+            "ModIndex" + juce::String(i),
+            modRange,
             1.0f));
     }
     // Cutoff Parameter (1)
