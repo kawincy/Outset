@@ -18,6 +18,7 @@
 #include "GUI/OscComp.h"
 #include "GUI/OscEnvTab.h"
 #include "GUI/Scope.h"
+#include "GUI/FXComp.h"
 
 //==============================================================================
 /**
@@ -36,13 +37,16 @@ private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
     OutsetAudioProcessor& audioProcessor;
-    HeaderComp presets_comp;
+    HeaderComp header_comp;
     //EnvComp env_comp;
     FilterComp filter_comp;
     KeyboardComp keyboard_comp;
     AlgComp alg_comp;
     //OscComp osc_comp;
 	OscEnvTab osc_env_tab;
+    FXComp fx_comp;
+    
+    bool fxVisible = false;
 
     void timerCallback() override
     {

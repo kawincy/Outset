@@ -59,33 +59,7 @@ void HeaderComp::resized()
 
 void HeaderComp::showFXPopup()
 {
-    // Placeholder for FX container
-    class FXRackPopup : public juce::Component
-    {
-    public:
-        FXRackPopup()
-        {
-            setSize(400, 300);
-        }
-        
-        void paint(juce::Graphics& g) override
-        {
-            g.fillAll(colors().bg);
-            g.setColour(colors().accent);
-            g.drawRect(getLocalBounds(), 2);
-            
-            g.setColour(colors().white);
-            g.setFont(juce::FontOptions(16.0f));
-            g.drawText("FX Rack (Coming Soon)", getLocalBounds(), 
-                      juce::Justification::centred, true);
-        }
-    };
-    
-    auto* popup = new FXRackPopup();
-    auto& callout = juce::CallOutBox::launchAsynchronously(
-        std::unique_ptr<juce::Component>(popup),
-        fxButton.getScreenBounds(),
-        nullptr
-    );
-    callout.setDismissalMouseClicksAreAlwaysConsumed(true);
+    // Toggle FX visibility
+    if (onFXButtonClicked)
+        onFXButtonClicked();
 }

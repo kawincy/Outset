@@ -24,6 +24,9 @@ public:
 
     void paint (juce::Graphics&) override;
     void resized() override;
+    
+    // Callback for FX button
+    std::function<void()> onFXButtonClicked;
 
 private:
     PresetPanel presetPanel;

@@ -14,6 +14,7 @@
 #include "GUI/Scope.h"
 #include "GUI/rta.h"
 #include "PresetManager.h"
+#include "FX/OutsetVerbEngine.h"
 //==============================================================================
 /**
 */
@@ -64,6 +65,9 @@ public:
   RTA& getRTA() { return rta; }
     
     PresetManager& getPresetManager() { return *presetManager; }
+    
+    // FX Engine access
+    OutsetVerbEngine& getFXEngine() { return *fxEngine; }
 private:
     juce::MidiKeyboardState keyboardState;
     void splitBufferByEvents(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages);
@@ -75,6 +79,9 @@ private:
     std::unique_ptr<Scope> scope;
     std::unique_ptr<PresetManager> presetManager;
   RTA rta; // real-time analyzer
+    
+    // FX processing engine
+    std::unique_ptr<OutsetVerbEngine> fxEngine;
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (OutsetAudioProcessor)
 };
