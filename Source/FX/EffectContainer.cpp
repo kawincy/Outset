@@ -155,7 +155,7 @@ void EffectContainer::resized()
 
             // Calculate position for this control
             int x = col * (columnWidth + columnSpacing);
-            int y = row * (rowHeight + padding);
+            int y = bounds.getY() + row * (rowHeight + padding);
             int width = columnWidth;
             int height = rowHeight;
 

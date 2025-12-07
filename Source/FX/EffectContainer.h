@@ -80,7 +80,7 @@ private:
     static constexpr int padding = 8;
     static constexpr int labelHeight = 20;
     static constexpr int columnSpacing = 4;
-    static constexpr int minControlsForTwoColumn = 6;
+    static constexpr int minControlsForTwoColumn = 5;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(EffectContainer)
 };

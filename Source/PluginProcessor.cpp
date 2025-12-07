@@ -497,7 +497,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout OutsetAudioProcessor::create
         juce::ParameterID("bitCrusherMix", 1),
         "BitCrusher Mix",
         juce::NormalisableRange<float>(0.0f, 1.0f, 0.01f),
-        0.0f)
+        0.f)
     );
 
     // Delay parameters
@@ -519,7 +519,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout OutsetAudioProcessor::create
         juce::ParameterID("delayMix", 1),
         "Delay Mix",
         juce::NormalisableRange<float>(0.0f, 1.0f, 0.01f),
-        0.0f)
+        0.3f)
     );
 
     layout.add(std::make_unique<juce::AudioParameterFloat>(
@@ -598,7 +598,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout OutsetAudioProcessor::create
         juce::ParameterID("reverbMix", 1),
         "Reverb Mix",
         juce::NormalisableRange<float>(0.0f, 1.0f, 0.01f),
-        0.0f)
+        0.3f)
     );
 
     layout.add(std::make_unique<juce::AudioParameterFloat>(
