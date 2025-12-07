@@ -19,8 +19,7 @@ HeaderComp::HeaderComp(PresetManager& pm) :
 {
     // In your constructor, you should add any child components, and
     // initialise any special settings that your component needs.
-    addAndMakeVisible(presetPanel);
-    
+    addAndMakeVisible(presetPanel);    
     // Setup FX button
     fxButton.setButtonText("FX");
     fxButton.setColour(juce::TextButton::buttonColourId, colors().bg);
@@ -39,13 +38,20 @@ void HeaderComp::paint (juce::Graphics& g)
 {
     g.fillAll(colors().bg);
 
+<<<<<<< HEAD
     //g.setColour(colors().main);
     //g.setFont(juce::FontOptions(14.0f));
     //g.drawText("Presets", getLocalBounds(), juce::Justification::centred, true);
+=======
+    g.setColour(colors().main);
+    g.setFont(juce::FontOptions(14.0f));
+    g.drawText("Presets", getLocalBounds(), juce::Justification::centred, true);
+>>>>>>> main
 }
 
 void HeaderComp::resized()
 {
+<<<<<<< HEAD
     auto bounds = getBounds();
     auto width = bounds.getWidth();
     auto height = bounds.getHeight();
@@ -62,4 +68,7 @@ void HeaderComp::showFXPopup()
     // Toggle FX visibility
     if (onFXButtonClicked)
         onFXButtonClicked();
+=======
+    presetPanel.setBounds(getBounds());
+>>>>>>> main
 }

@@ -37,7 +37,7 @@ private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
     OutsetAudioProcessor& audioProcessor;
-    HeaderComp header_comp;
+    PresetsComp presets_comp;
     //EnvComp env_comp;
     FilterComp filter_comp;
     KeyboardComp keyboard_comp;
