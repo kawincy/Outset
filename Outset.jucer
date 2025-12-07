@@ -6,6 +6,33 @@
               companyName="Lantertronics">
   <MAINGROUP id="YW4tEd" name="Outset">
     <GROUP id="{08B4255C-6792-1333-C4D2-110BD672E3EA}" name="Source">
+      <GROUP id="{C0064A16-7909-1FDE-0340-B0CF59D08C9D}" name="FX">
+        <GROUP id="{51C0EBA8-0A9C-B626-24A3-B605B158F992}" name="Effects">
+          <FILE id="FD90CI" name="BitCrusherNode.cpp" compile="1" resource="0"
+                file="Source/FX/Effects/BitCrusherNode.cpp"/>
+          <FILE id="J24srD" name="BitCrusherNode.h" compile="0" resource="0"
+                file="Source/FX/Effects/BitCrusherNode.h"/>
+          <FILE id="ghJffV" name="DelayNode.cpp" compile="1" resource="0" file="Source/FX/Effects/DelayNode.cpp"/>
+          <FILE id="jVKM7Z" name="DelayNode.h" compile="0" resource="0" file="Source/FX/Effects/DelayNode.h"/>
+          <FILE id="eSkzX3" name="ReverbNode.cpp" compile="1" resource="0" file="Source/FX/Effects/ReverbNode.cpp"/>
+          <FILE id="xPFb3z" name="ReverbNode.h" compile="0" resource="0" file="Source/FX/Effects/ReverbNode.h"/>
+          <FILE id="wqJSyu" name="ThreeBandEQNode.cpp" compile="1" resource="0"
+                file="Source/FX/Effects/ThreeBandEQNode.cpp"/>
+          <FILE id="nSdiJR" name="ThreeBandEQNode.h" compile="0" resource="0"
+                file="Source/FX/Effects/ThreeBandEQNode.h"/>
+        </GROUP>
+        <FILE id="yjzUAD" name="EffectContainer.cpp" compile="1" resource="0"
+              file="Source/FX/EffectContainer.cpp"/>
+        <FILE id="fdyeZj" name="EffectContainer.h" compile="0" resource="0"
+              file="Source/FX/EffectContainer.h"/>
+        <FILE id="vlJXrW" name="OutsetVerbEngine.cpp" compile="1" resource="0"
+              file="Source/FX/OutsetVerbEngine.cpp"/>
+        <FILE id="TulYkg" name="OutsetVerbEngine.h" compile="0" resource="0"
+              file="Source/FX/OutsetVerbEngine.h"/>
+        <FILE id="F8GjJB" name="OutsetVerbUI.cpp" compile="1" resource="0"
+              file="Source/FX/OutsetVerbUI.cpp"/>
+        <FILE id="pVo0We" name="OutsetVerbUI.h" compile="0" resource="0" file="Source/FX/OutsetVerbUI.h"/>
+      </GROUP>
       <FILE id="RTdwLZ" name="PresetManager.cpp" compile="1" resource="0"
             file="Source/PresetManager.cpp"/>
       <FILE id="cmiLiq" name="PresetManager.h" compile="0" resource="0" file="Source/PresetManager.h"/>
@@ -25,6 +52,8 @@
         <FILE id="okJXF8" name="VoiceHandler.h" compile="0" resource="0" file="Source/DSP/VoiceHandler.h"/>
       </GROUP>
       <GROUP id="{D000975A-FD13-24BE-CFE2-76B8EFA2C9CE}" name="GUI">
+        <FILE id="OVaMVq" name="FXComp.cpp" compile="1" resource="0" file="Source/GUI/FXComp.cpp"/>
+        <FILE id="AcUyHt" name="FXComp.h" compile="0" resource="0" file="Source/GUI/FXComp.h"/>
         <FILE id="lIGsy0" name="rta.h" compile="0" resource="0" file="Source/GUI/rta.h"/>
         <FILE id="OtDB7u" name="DraggableGraph.h" compile="0" resource="0"
               file="Source/GUI/DraggableGraph.h"/>
