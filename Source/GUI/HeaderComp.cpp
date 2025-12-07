@@ -38,20 +38,16 @@ void HeaderComp::paint (juce::Graphics& g)
 {
     g.fillAll(colors().bg);
 
-<<<<<<< HEAD
     //g.setColour(colors().main);
     //g.setFont(juce::FontOptions(14.0f));
     //g.drawText("Presets", getLocalBounds(), juce::Justification::centred, true);
-=======
     g.setColour(colors().main);
     g.setFont(juce::FontOptions(14.0f));
     g.drawText("Presets", getLocalBounds(), juce::Justification::centred, true);
->>>>>>> main
 }
 
 void HeaderComp::resized()
 {
-<<<<<<< HEAD
     auto bounds = getBounds();
     auto width = bounds.getWidth();
     auto height = bounds.getHeight();
@@ -68,7 +64,5 @@ void HeaderComp::showFXPopup()
     // Toggle FX visibility
     if (onFXButtonClicked)
         onFXButtonClicked();
-=======
     presetPanel.setBounds(getBounds());
->>>>>>> main
 }
