@@ -3,7 +3,7 @@
 <JUCERPROJECT id="BU29S7" name="Outset" projectType="audioplug" useAppConfig="0"
               addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1"
               pluginCharacteristicsValue="pluginIsSynth,pluginProducesMidiOut,pluginWantsMidiIn"
-              companyName="Lantertronics">
+              companyName="Retrofuturistic HW">
   <MAINGROUP id="YW4tEd" name="Outset">
     <GROUP id="{08B4255C-6792-1333-C4D2-110BD672E3EA}" name="Source">
       <GROUP id="{C0064A16-7909-1FDE-0340-B0CF59D08C9D}" name="FX">
