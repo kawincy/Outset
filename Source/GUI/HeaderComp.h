@@ -14,8 +14,7 @@
 #include "PresetPanel.h"
 
 //==============================================================================
-/*
-*/
+
 class HeaderComp  : public juce::Component
 {
 public:
